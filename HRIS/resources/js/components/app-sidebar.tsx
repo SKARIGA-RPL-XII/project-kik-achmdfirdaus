@@ -1,6 +1,6 @@
-import { NavFooter } from '@/components/nav-footer';
-import { NavMain } from '@/components/nav-main';
-import { NavUser } from '@/components/nav-user';
+import { NavFooter } from '@/components/nav-footer'
+import { NavMain } from '@/components/nav-main'
+import { NavUser } from '@/components/nav-user'
 import {
     Sidebar,
     SidebarContent,
@@ -9,12 +9,12 @@ import {
     SidebarMenu,
     SidebarMenuButton,
     SidebarMenuItem,
-} from '@/components/ui/sidebar';
-import { dashboard } from '@/routes';
-import { type NavItem } from '@/types';
-import { Link } from '@inertiajs/react';
-import { BookOpen, Folder, LayoutGrid } from 'lucide-react';
-import AppLogo from './app-logo';
+} from '@/components/ui/sidebar'
+import { dashboard } from '@/routes'
+import { type NavItem } from '@/types'
+import { Link } from '@inertiajs/react'
+import { BookOpen, Folder, LayoutGrid, Briefcase, Users, Calendar, Building } from 'lucide-react'
+import AppLogo from './app-logo'
 
 const mainNavItems: NavItem[] = [
     {
@@ -22,7 +22,20 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
-];
+    {
+        title: 'Master Data',
+        icon: Folder,
+        children: [
+            { title: 'Jabatan', href: '/app/jabatn', icon: Briefcase },
+            { title: 'Divisi', href: '/app/divisi', icon: Building },
+            { title: 'Kalender', href: '/app/kalender', icon: Calendar },
+        ],
+    }, {
+        title: 'Karyawan',
+        href: '/app/karyawan',
+        icon: Users,
+    },
+]
 
 const footerNavItems: NavItem[] = [
     {
@@ -35,7 +48,7 @@ const footerNavItems: NavItem[] = [
         href: 'https://laravel.com/docs/starter-kits#react',
         icon: BookOpen,
     },
-];
+]
 
 export function AppSidebar() {
     return (
@@ -61,5 +74,5 @@ export function AppSidebar() {
                 <NavUser />
             </SidebarFooter>
         </Sidebar>
-    );
+    )
 }
