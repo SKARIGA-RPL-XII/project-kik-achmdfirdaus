@@ -41,7 +41,6 @@ function NavItemAnimated({
     const [open, setOpen] = useState(false)
     const Icon = item.icon
 
-    // 🔹 auto open jika child aktif
     useEffect(() => {
         if (
             item.children?.some((c) =>
@@ -52,9 +51,6 @@ function NavItemAnimated({
         }
     }, [currentUrl, item.children])
 
-    /* ===================== */
-    /* MENU DROPDOWN         */
-    /* ===================== */
     if (item.children && item.children.length > 0) {
         return (
             <SidebarMenuItem>

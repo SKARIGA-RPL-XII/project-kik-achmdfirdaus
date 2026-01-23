@@ -26,7 +26,7 @@ const mainNavItems: NavItem[] = [
         title: 'Master Data',
         icon: Folder,
         children: [
-            { title: 'Jabatan', href: '/app/jabatn', icon: Briefcase },
+            { title: 'Jabatan', href: '/app/jabatan', icon: Briefcase },
             { title: 'Divisi', href: '/app/divisi', icon: Building },
             { title: 'Kalender', href: '/app/kalender', icon: Calendar },
         ],
