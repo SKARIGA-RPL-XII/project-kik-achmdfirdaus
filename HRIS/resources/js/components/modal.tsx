@@ -9,9 +9,6 @@ import { useForm } from '@inertiajs/react'
 import { useEffect, useState } from 'react'
 import { formatRupiah, parseRupiah } from '@/lib/rupiah'
 
-/* =====================
-   TYPE FIELD
-===================== */
 export type Field = {
     name: string
     label: string

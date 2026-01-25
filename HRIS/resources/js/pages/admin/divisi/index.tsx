@@ -9,10 +9,18 @@ import Alert from '@/components/alert'
 import SearchInput from '@/components/search'
 import Pagination from '@/components/pagination'
 import Table from '@/components/table'
+import { BreadcrumbItem } from '@/types'
 
 const PER_PAGE = 5
 
 export default function Index({ divisi }: any) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Divisi',
+            href: '/app/divisi',
+        },
+    ];
+
     const [modalOpen, setModalOpen] = useState(false)
     const [editData, setEditData] = useState<any>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
@@ -70,7 +78,7 @@ export default function Index({ divisi }: any) {
     }
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Divisi" />
 
             {flash?.success && (

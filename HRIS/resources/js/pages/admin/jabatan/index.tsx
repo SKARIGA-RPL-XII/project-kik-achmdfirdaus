@@ -9,10 +9,18 @@ import Alert from '@/components/alert'
 import SearchInput from '@/components/search'
 import Pagination from '@/components/pagination'
 import Table from '@/components/table'
+import { BreadcrumbItem } from '@/types'
 
 const PER_PAGE = 5
 
 export default function Index({ jabatan }: any) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        {
+            title: 'Jabatan',
+            href: '/app/jabatan',
+        },
+    ];
+
     const [modalOpen, setModalOpen] = useState(false)
     const [editData, setEditData] = useState<any>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
@@ -86,7 +94,7 @@ export default function Index({ jabatan }: any) {
     }
 
     return (
-        <AppLayout>
+        <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Jabatan" />
 
             {flash?.success && (

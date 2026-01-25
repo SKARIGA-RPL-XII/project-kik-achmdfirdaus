@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Divisi;
 use App\Models\Jabatan;
+use App\Models\Karyawan;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -115,6 +117,11 @@ class AdminController extends Controller
     }
     public function karyawan()
     {
-        return Inertia::render('admin/karyawan/index');
+        return Inertia::render('admin/karyawan/index', [
+            'karyawan' => Karyawan::with('user', 'divisi', 'jabatan')->get(),
+            'divisi' => Divisi::latest()->get(),
+            'jabatan' => Jabatan::latest()->get(),
+            'users' => User::latest()->get(),
+        ]);
     }
 }
