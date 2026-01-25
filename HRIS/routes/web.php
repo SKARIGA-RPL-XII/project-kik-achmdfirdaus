@@ -26,6 +26,11 @@ Route::put('/app/jabatan/{id}', [AdminController::class, 'jabatanUpdate'])->name
 Route::delete('/app/jabatan/{id}', [AdminController::class, 'jabatanDestroy'])->name('app.jabatan.destroy');
 
 Route::get('/app/divisi', [AdminController::class, 'divisi'])->name('app.divisi');
+Route::post('/app/divisi', [AdminController::class, 'divisiStore'])->name('app.divisi.store');
+Route::put('/app/divisi/{id}', [AdminController::class, 'divisiUpdate'])->name('app.divisi.update');
+Route::delete('/app/divisi/{id}', [AdminController::class, 'divisiDestroy'])->name('app.divisi.destroy');
+
+
 Route::get('/app/kalender', [AdminController::class, 'kalender'])->name('app.kalender');
 Route::get('/app/karyawan', [AdminController::class, 'karyawan'])->name('app.karyawan');
 
