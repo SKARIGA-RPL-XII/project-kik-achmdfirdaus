@@ -11,6 +11,7 @@ class AdminController extends Controller
 {
     public function jabatan()
     {
+
         return Inertia::render('admin/jabatan/index', ['jabatan' => Jabatan::latest()->get()]);
     }
     public function jabatanStore(Request $request)
@@ -54,7 +55,7 @@ class AdminController extends Controller
 
             Jabatan::findOrFail($id)->delete();
 
-            return redirect()->route('app.jabatan')->with('success', 'Data berhasil diubah.');
+            return redirect()->route('app.jabatan')->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('app.jabatan')->with('error', $e->getMessage());
         }
