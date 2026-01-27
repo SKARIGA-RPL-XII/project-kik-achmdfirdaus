@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
@@ -150,6 +151,33 @@ class AdminController extends Controller
             return redirect()->route('app.lembur')->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('app.lembur')->with('error', $e->getMessage());
+        }
+    }
+    public function cuti()
+    {
+        return Inertia::render('admin/cuti/index', ['cuti' => Cuti::with('karyawan')->latest()->get()]);
+    }
+    public function cutiUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:disetujui,ditolak'
+        ]);
+        $lembur = Cuti::findOrFail($id);
+        $lembur->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status cuti diperbarui');
+    }
+    public function cutiDestroy($id)
+    {
+        try {
+
+            Cuti::findOrFail($id)->delete();
+
+            return redirect()->route('app.cuti')->with('success', 'Data berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('app.cuti')->with('error', $e->getMessage());
         }
     }
 }

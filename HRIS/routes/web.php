@@ -37,5 +37,9 @@ Route::get('/app/lembur', [AdminController::class, 'lembur'])->name('app.lembur'
 Route::put('/app/lembur/{id}/status', [AdminController::class, 'lemburUpdate'])->name('app.lembur.status');
 Route::delete('/app/lembur/{id}', [AdminController::class, 'lemburDestroy'])->name('app.lembur.destroy');
 
+Route::get('/app/cuti', [AdminController::class, 'cuti'])->name('app.cuti');
+Route::put('/app/cuti/{id}/status', [AdminController::class, 'cutiUpdate'])->name('app.cuti.status');
+Route::delete('/app/cuti/{id}', [AdminController::class, 'cutiDestroy'])->name('app.cuti.destroy');
+
 
 require __DIR__ . '/settings.php';
