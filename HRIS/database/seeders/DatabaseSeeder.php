@@ -162,9 +162,9 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         DB::table('lembur')->insert([
-            ['karyawan_id' => 1, 'tanggal' => now(), 'status' => 'disetujui'],
+            ['karyawan_id' => 1, 'tanggal' => now(), 'status' => 'pending'],
             ['karyawan_id' => 2, 'tanggal' => now(), 'status' => 'pending'],
-            ['karyawan_id' => 3, 'tanggal' => now(), 'status' => 'disetujui'],
+            ['karyawan_id' => 3, 'tanggal' => now(), 'status' => 'pending'],
             ['karyawan_id' => 4, 'tanggal' => now(), 'status' => 'ditolak'],
             ['karyawan_id' => 5, 'tanggal' => now(), 'status' => 'disetujui'],
         ]);

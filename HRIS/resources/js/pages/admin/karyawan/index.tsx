@@ -11,7 +11,7 @@ import SearchInput from '@/components/search'
 
 const PER_PAGE = 5
 
-export default function Index({ karyawan, users, divisi, jabatan }: any) {
+export default function Index({ karyawan, divisi, jabatan }: any) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Data Karyawan', href: '/app/karyawan' },
     ]

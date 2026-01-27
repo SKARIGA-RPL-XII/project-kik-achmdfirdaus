@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Divisi;
 use App\Models\Jabatan;
 use App\Models\Karyawan;
+use App\Models\Lembur;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
@@ -123,5 +124,32 @@ class AdminController extends Controller
             'jabatan' => Jabatan::latest()->get(),
             'users' => User::latest()->get(),
         ]);
+    }
+    public function lembur()
+    {
+        return Inertia::render('admin/lembur/index', ['lembur' => Lembur::with('karyawan')->latest()->get()]);
+    }
+    public function lemburUpdate(Request $request, $id)
+    {
+        $request->validate([
+            'status' => 'required|in:disetujui,ditolak'
+        ]);
+        $lembur = Lembur::findOrFail($id);
+        $lembur->update([
+            'status' => $request->status
+        ]);
+
+        return back()->with('success', 'Status lembur diperbarui');
+    }
+    public function lemburDestroy($id)
+    {
+        try {
+
+            Lembur::findOrFail($id)->delete();
+
+            return redirect()->route('app.lembur')->with('success', 'Data berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('app.lembur')->with('error', $e->getMessage());
+        }
     }
 }

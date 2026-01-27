@@ -30,8 +30,12 @@ Route::post('/app/divisi', [AdminController::class, 'divisiStore'])->name('app.d
 Route::put('/app/divisi/{id}', [AdminController::class, 'divisiUpdate'])->name('app.divisi.update');
 Route::delete('/app/divisi/{id}', [AdminController::class, 'divisiDestroy'])->name('app.divisi.destroy');
 
-
 Route::get('/app/kalender', [AdminController::class, 'kalender'])->name('app.kalender');
 Route::get('/app/karyawan', [AdminController::class, 'karyawan'])->name('app.karyawan');
+
+Route::get('/app/lembur', [AdminController::class, 'lembur'])->name('app.lembur');
+Route::put('/app/lembur/{id}/status', [AdminController::class, 'lemburUpdate'])->name('app.lembur.status');
+Route::delete('/app/lembur/{id}', [AdminController::class, 'lemburDestroy'])->name('app.lembur.destroy');
+
 
 require __DIR__ . '/settings.php';
