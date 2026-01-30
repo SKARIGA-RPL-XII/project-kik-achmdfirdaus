@@ -132,10 +132,26 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         DB::table('kalender')->insert([
-            ['tanggal' => '2025-01-01', 'keterangan' => 'Tahun Baru', 'jenis_hari' => 'event'],
-            ['tanggal' => '2025-01-04', 'keterangan' => 'Weekend', 'jenis_hari' => 'event'],
-            ['tanggal' => '2025-01-05', 'keterangan' => 'Weekend', 'jenis_hari' => 'event'],
-            ['tanggal' => '2025-01-09', 'keterangan' => 'Weekend', 'jenis_hari' => 'cuti'],
+            [
+                'tanggal' => '2026-01-09',
+                'keterangan' => 'Cuti Bersama Kantor',
+                'jenis_hari' => 'cuti',
+            ],
+            [
+                'tanggal' => '2026-01-15',
+                'keterangan' => 'Company Gathering',
+                'jenis_hari' => 'event',
+            ],
+            [
+                'tanggal' => '2026-01-22',
+                'keterangan' => 'Training Internal',
+                'jenis_hari' => 'event',
+            ],
+            [
+                'tanggal' => '2026-01-27',
+                'keterangan' => 'Cuti Bersama Divisi IT',
+                'jenis_hari' => 'cuti',
+            ],
         ]);
 
         /*

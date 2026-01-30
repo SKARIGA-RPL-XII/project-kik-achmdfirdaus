@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Jabatan;
+use App\Models\Kalender;
 use App\Models\Karyawan;
 use App\Models\Lembur;
 use App\Models\User;
@@ -115,8 +116,54 @@ class AdminController extends Controller
 
     public function kalender()
     {
-        return Inertia::render('admin/kalender/index');
+        return Inertia::render('admin/kalender/index', [
+            'kalender' => Kalender::select('id', 'tanggal', 'keterangan', 'jenis_hari')->get()
+        ]);
     }
+    public function kalenderStore(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'tanggal' => 'required|date',
+                'keterangan' => 'required|string|max:255',
+                'jenis_hari' => 'required|in:event,cuti',
+            ]);
+
+            Kalender::create($validated);
+            return redirect()->route('app.kalender')->with('success', 'Event berhasil ditambahkan');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return redirect()->route('app.kalender')->with('error', $e->getMessage());
+        }
+    }
+    public function kalenderUpdate(Request $request, $id)
+    {
+        try {
+            $validated = $request->validate([
+                'tanggal' => 'required|date',
+                'keterangan' => 'required|string|max:255',
+                'jenis_hari' => 'required|in:event,cuti',
+            ]);
+
+            Kalender::findOrFail($id)->update($validated);
+            return redirect()->route('app.kalender')->with('success', 'Event berhasil diubah');
+        } catch (ValidationException $e) {
+            return redirect()->back()->withErrors($e->validator)->withInput();
+        } catch (\Exception $e) {
+            return redirect()->route('app.kalender')->with('error', $e->getMessage());
+        }
+    }
+    public function kalenderDestroy($id)
+    {
+        try {
+            Kalender::findOrFail($id)->delete();
+            return redirect()->route('app.kalender')->with('success', 'Event berhasil dihapus');
+        } catch (\Exception $e) {
+            return redirect()->route('app.kalender')->with('error', $e->getMessage());
+        }
+    }
+
     public function karyawan()
     {
         return Inertia::render('admin/karyawan/index', [

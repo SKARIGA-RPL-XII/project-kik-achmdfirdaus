@@ -29,11 +29,8 @@ const mainNavItems: NavItem[] = [
             { title: 'Jabatan', href: '/app/jabatan', icon: Briefcase },
             { title: 'Divisi', href: '/app/divisi', icon: Building },
             { title: 'Kalender', href: '/app/kalender', icon: Calendar },
+            { title: 'Karyawan', href: '/app/karyawan', icon: Users, }
         ],
-    }, {
-        title: 'Karyawan',
-        href: '/app/karyawan',
-        icon: Users,
     },
 ]
 
