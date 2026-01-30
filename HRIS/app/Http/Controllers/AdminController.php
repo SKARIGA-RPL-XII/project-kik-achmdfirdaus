@@ -117,7 +117,7 @@ class AdminController extends Controller
     public function kalender()
     {
         return Inertia::render('admin/kalender/index', [
-            'kalender' => Kalender::select('id', 'tanggal', 'keterangan', 'jenis_hari')->get()
+            'kalender' => Kalender::get()->all(),
         ]);
     }
     public function kalenderStore(Request $request)
@@ -128,7 +128,6 @@ class AdminController extends Controller
                 'keterangan' => 'required|string|max:255',
                 'jenis_hari' => 'required|in:event,cuti',
             ]);
-
             Kalender::create($validated);
             return redirect()->route('app.kalender')->with('success', 'Event berhasil ditambahkan');
         } catch (ValidationException $e) {

@@ -1,15 +1,16 @@
 import { EventModal } from '@/components/event-modal';
 import SuccessModal from '@/components/success-modal';
+import Action from '@/components/action-menu';
+import ModalDelete from '@/components/modal-delete';
 import AppLayout from '@/layouts/app-layout';
-import { Head } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import Holidays from 'date-holidays';
 import {
     ChevronLeft,
     ChevronRight,
     Plus,
-    MoreVertical,
 } from 'lucide-react';
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 
 interface KalenderItem {
     id?: number;
@@ -25,46 +26,20 @@ interface PageProps {
 const normalizeDate = (date: string | Date) =>
     new Date(date).toISOString().slice(0, 10);
 
-function ActionMenu({
-    onEdit,
-    onDelete,
-}: {
-    onEdit: () => void;
-    onDelete: () => void;
-}) {
-    const [open, setOpen] = useState(false);
-
-    return (
-        <div className="relative">
-            <button onClick={() => setOpen(!open)}>
-                <MoreVertical size={16} />
-            </button>
-
-            {open && (
-                <div className="absolute right-0 mt-1 w-24 rounded bg-white shadow border text-xs z-10">
-                    <button
-                        onClick={onEdit}
-                        className="block w-full px-3 py-2 text-left hover:bg-gray-100"
-                    >
-                        Edit
-                    </button>
-                    <button
-                        onClick={onDelete}
-                        className="block w-full px-3 py-2 text-left text-red-600 hover:bg-gray-100"
-                    >
-                        Hapus
-                    </button>
-                </div>
-            )}
-        </div>
-    );
-}
-
 export default function Index({ kalender = [] }: PageProps) {
     const [currentDate, setCurrentDate] = useState(new Date());
     const [showEventModal, setShowEventModal] = useState(false);
     const [modal, setModal] = useState(false);
 
+    const [deleteOpen, setDeleteOpen] = useState(false);
+    const [deleteId, setDeleteId] = useState<number | null>(null);
+    const { flash } = usePage().props as any;
+    const [open, setOpen] = useState(false);
+    useEffect(() => {
+        if (flash?.success) {
+            setOpen(true);
+        }
+    }, [flash]);
     const [selected, setSelected] = useState<KalenderItem | null>(null);
 
     const month = currentDate.getMonth();
@@ -111,9 +86,23 @@ export default function Index({ kalender = [] }: PageProps) {
         setShowEventModal(true);
     };
 
-    const handleDelete = (item: KalenderItem) => {
-        console.log('delete', item);
-    };
+    function openDelete(id: number) {
+        setDeleteId(id);
+        setDeleteOpen(true);
+    }
+
+    function handleDelete() {
+        if (!deleteId) return;
+
+        router.delete(`/app/kalender/${deleteId}`, {
+            preserveScroll: true,
+            onFinish: () => {
+                setDeleteOpen(false);
+                setDeleteId(null);
+                setModal(true);
+            },
+        });
+    }
 
     const renderItem = (item: KalenderItem, showMenu = true, i: number) => (
         <div key={i} className="flex items-start justify-between gap-2">
@@ -124,9 +113,9 @@ export default function Index({ kalender = [] }: PageProps) {
             </div>
 
             {showMenu && (
-                <ActionMenu
+                <Action
                     onEdit={() => handleEdit(item)}
-                    onDelete={() => handleDelete(item)}
+                    onDelete={() => item.id && openDelete(item.id)}
                 />
             )}
         </div>
@@ -159,6 +148,7 @@ export default function Index({ kalender = [] }: PageProps) {
 
                     <div className="rounded-xl bg-white p-6 shadow">
 
+                        {/* Header */}
                         <div className="mb-6 flex justify-between">
                             <h2 className="font-bold">Kalender</h2>
 
@@ -176,6 +166,7 @@ export default function Index({ kalender = [] }: PageProps) {
 
                         <div className="flex gap-10">
 
+                            {/* Kalender */}
                             <div className="flex-1">
 
                                 <div className="mb-4 flex justify-between">
@@ -222,6 +213,7 @@ export default function Index({ kalender = [] }: PageProps) {
                                 </div>
                             </div>
 
+                            {/* Sidebar */}
                             <div className="w-56 text-sm space-y-6">
                                 <div>
                                     <p className="font-bold text-red-600 mb-2">Libur Nasional</p>
@@ -242,7 +234,9 @@ export default function Index({ kalender = [] }: PageProps) {
                     </div>
                 </div>
 
-                <SuccessModal isOpen={modal} onClose={() => setModal(false)} />
+                <SuccessModal isOpen={open}
+                    onClose={() => setOpen(false)}
+                    message={flash?.success} />
 
                 <EventModal
                     key={selected?.id ?? 'create'}
@@ -253,6 +247,14 @@ export default function Index({ kalender = [] }: PageProps) {
                         setSelected(null);
                         setShowEventModal(false);
                     }}
+                />
+
+                <ModalDelete
+                    open={deleteOpen}
+                    title="Hapus Kalender"
+                    description="Data kalender yang dihapus tidak dapat dikembalikan."
+                    onClose={() => setDeleteOpen(false)}
+                    onConfirm={handleDelete}
                 />
 
             </AppLayout>

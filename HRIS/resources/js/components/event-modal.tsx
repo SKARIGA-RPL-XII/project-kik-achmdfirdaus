@@ -24,7 +24,23 @@ export const EventModal = ({
 }: EventModalProps) => {
     const isEdit = !!initialData;
 
-    const { data, setData, post, put, processing, reset, errors } = useForm({
+    const monthNames = [
+        'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+        'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+    ];
+
+    const [clientErrors, setClientErrors] = useState<Record<string, string>>({});
+
+    const {
+        data,
+        setData,
+        post,
+        put,
+        processing,
+        reset,
+        errors,
+        clearErrors,
+    } = useForm({
         keterangan: '',
         jenis_hari: 'event',
         tanggal: '',
@@ -41,27 +57,32 @@ export const EventModal = ({
             });
             setViewDate(new Date(initialData.tanggal));
         } else {
-            reset({
-                keterangan: '',
-                jenis_hari: 'event',
-                tanggal: '',
-            });
+            reset();
         }
-    }, [initialData]);
 
+        setClientErrors({});
+        clearErrors();
+    }, [initialData, isOpen]);
 
     if (!isOpen) return null;
 
+    const validate = () => {
+        const errs: Record<string, string> = {};
+
+        if (!data.keterangan) errs.keterangan = 'Keterangan wajib diisi';
+        if (!data.jenis_hari) errs.jenis_hari = 'Jenis hari wajib dipilih';
+        if (!data.tanggal) errs.tanggal = 'Tanggal wajib dipilih';
+
+        setClientErrors(errs);
+        return Object.keys(errs).length === 0;
+    };
+
     const handleClose = () => {
-        reset({
-            keterangan: '',
-            jenis_hari: 'event',
-            tanggal: '',
-        });
+        reset();
+        setClientErrors({});
         setViewDate(new Date());
         onClose();
     };
-
 
     const viewYear = viewDate.getFullYear();
     const viewMonth = viewDate.getMonth();
@@ -78,30 +99,25 @@ export const EventModal = ({
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
 
-        if (isEdit && initialData?.id) {
-            put(`/app/kalender/${initialData.id}`, {
-                onSuccess: () => {
-                    success();
-                    handleClose();
-                },
-            });
-        } else {
-            post('/app/kalender', {
-                onSuccess: () => {
-                    success();
-                    handleClose();
-                },
-            });
-        }
+        if (!validate()) return;
+
+        const options = {
+            onSuccess: () => {
+                success();
+                handleClose();
+            },
+        };
+
+        isEdit && initialData?.id
+            ? put(`/app/kalender/${initialData.id}`, options)
+            : post('/app/kalender', options);
     };
 
     return (
-
         <div
             onClick={(e) => e.target === e.currentTarget && handleClose()}
             className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
         >
-
             <div className="bg-white w-full max-w-lg rounded p-6">
 
                 <h2 className="text-lg font-bold mb-4">
@@ -110,37 +126,63 @@ export const EventModal = ({
 
                 <form onSubmit={handleSubmit} className="space-y-4">
 
-                    <input
-                        value={data.keterangan}
-                        onChange={(e) => setData('keterangan', e.target.value)}
-                        placeholder="Keterangan"
-                        className="w-full border p-2 rounded"
-                    />
+                    <div>
+                        <input
+                            value={data.keterangan}
+                            onChange={(e) => setData('keterangan', e.target.value)}
+                            placeholder="Keterangan"
+                            className="w-full border p-2 rounded"
+                        />
+                        {(clientErrors.keterangan || errors.keterangan) && (
+                            <p className="text-red-500 text-sm">
+                                {clientErrors.keterangan || errors.keterangan}
+                            </p>
+                        )}
+                    </div>
 
-                    <select
-                        value={data.jenis_hari}
-                        onChange={(e) => setData('jenis_hari', e.target.value)}
-                        className="w-full border p-2 rounded"
-                    >
-                        <option value="event">Event</option>
-                        <option value="cuti">Cuti</option>
-                    </select>
+                    <div>
+                        <select
+                            value={data.jenis_hari}
+                            onChange={(e) => setData('jenis_hari', e.target.value)}
+                            className="w-full border p-2 rounded"
+                        >
+                            <option value="">Pilih Jenis</option>
+                            <option value="event">Event</option>
+                            <option value="cuti">Cuti</option>
+                        </select>
+                        {(clientErrors.jenis_hari || errors.jenis_hari) && (
+                            <p className="text-red-500 text-sm">
+                                {clientErrors.jenis_hari || errors.jenis_hari}
+                            </p>
+                        )}
+                    </div>
 
                     <div className="border p-4 rounded">
 
-                        <div className="flex justify-between mb-2">
-                            <button type="button" onClick={() => changeMonth(-1)}>
+                        <div className="flex items-center justify-between mb-3">
+                            <button
+                                type="button"
+                                onClick={() => changeMonth(-1)}
+                                className="p-1 hover:bg-gray-100 rounded"
+                            >
                                 <ChevronLeft />
                             </button>
-                            <button type="button" onClick={() => changeMonth(1)}>
+
+                            <span className="font-semibold text-sm">
+                                {monthNames[viewMonth]} {viewYear}
+                            </span>
+
+                            <button
+                                type="button"
+                                onClick={() => changeMonth(1)}
+                                className="p-1 hover:bg-gray-100 rounded"
+                            >
                                 <ChevronRight />
                             </button>
                         </div>
 
                         <div className="grid grid-cols-7 gap-1">
-                            {[...Array(firstDay)].map((_, i) => (
-                                <div key={i} />
-                            ))}
+                            {[...Array(firstDay)].map((_, i) => <div key={i} />)}
 
                             {[...Array(daysInMonth)].map((_, i) => {
                                 const day = i + 1;
@@ -152,8 +194,8 @@ export const EventModal = ({
                                         type="button"
                                         onClick={() => setData('tanggal', dateStr)}
                                         className={`p-2 rounded ${data.tanggal === dateStr
-                                            ? 'bg-yellow-400 text-white'
-                                            : 'hover:bg-gray-100'
+                                                ? 'bg-yellow-400 text-white'
+                                                : 'hover:bg-gray-100'
                                             }`}
                                     >
                                         {day}
@@ -161,9 +203,15 @@ export const EventModal = ({
                                 );
                             })}
                         </div>
+
+                        {(clientErrors.tanggal || errors.tanggal) && (
+                            <p className="text-red-500 text-sm mt-2">
+                                {clientErrors.tanggal || errors.tanggal}
+                            </p>
+                        )}
                     </div>
 
-                    <div className="flex justify-between">
+                    <div className="flex justify-end gap-2">
                         <button type="button" onClick={handleClose}>
                             Batal
                         </button>
@@ -173,15 +221,12 @@ export const EventModal = ({
                             disabled={processing}
                             className="bg-red-600 text-white px-4 py-2 rounded"
                         >
-                            {processing
-                                ? 'Menyimpan...'
-                                : isEdit
-                                    ? 'Update'
-                                    : 'Simpan'}
+                            {processing ? 'Menyimpan...' : 'Simpan'}
                         </button>
                     </div>
+
                 </form>
             </div>
-        </div >
+        </div>
     );
 };

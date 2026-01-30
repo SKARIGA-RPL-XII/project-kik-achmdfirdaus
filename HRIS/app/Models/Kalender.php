@@ -11,7 +11,7 @@ class Kalender extends Model
     protected $fillable = [
         'tanggal',
         'keterangan',
-        'janis_hari',
+        'jenis_hari',
     ];
     protected $casts = [
         'tanggal' => 'date:Y-m-d',

@@ -14,17 +14,20 @@ const SuccessModal = ({
     isOpen,
     onClose,
     title = "Berhasil",
-    message = "Data karyawan berhasil diperbarui."
+    message
 }: SuccessModalProps) => {
 
     useEffect(() => {
-        if (isOpen) {
-            const timer = setTimeout(() => {
-                onClose();
-            }, 2000);
-            return () => clearTimeout(timer);
-        }
+        if (!isOpen) return;
+
+        const timer = setTimeout(() => {
+            onClose();
+        }, 2000);
+
+        return () => clearTimeout(timer);
     }, [isOpen, onClose]);
+
+    if (!message) return null; // kalau tidak ada flash, modal tidak muncul
 
     return (
         <Dialog open={isOpen} onOpenChange={onClose}>
@@ -39,10 +42,10 @@ const SuccessModal = ({
                 </div>
 
                 <div className="flex flex-col items-center gap-2 text-center">
-                    <h2 className="text-2xl font-bold text-gray-900 tracking-tight">
+                    <h2 className="text-2xl font-bold text-gray-900">
                         {title}
                     </h2>
-                    <p className="text-gray-500 text-base leading-relaxed">
+                    <p className="text-gray-500 text-base">
                         {message}
                     </p>
                 </div>
