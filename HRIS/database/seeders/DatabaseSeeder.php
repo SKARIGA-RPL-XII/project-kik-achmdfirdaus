@@ -159,17 +159,30 @@ class DatabaseSeeder extends Seeder
         | ABSENSI
         |--------------------------------------------------------------------------
         */
-        for ($i = 1; $i <= 5; $i++) {
-            DB::table('absensi')->insert([
-                'karyawan_id' => $i,
-                'tanggal' => Carbon::now()->subDays(rand(1, 5)),
-                'jam_masuk' => '08:00:00',
-                'jam_pulang' => '17:00:00',
-                'foto_masuk' => 'masuk.jpg',
-                'foto_pulang' => 'pulang.jpg',
-                'status' => 'hadir',
-                'keterangan' => null,
-            ]);
+        $start = Carbon::create(2026, 1, 1);
+        $end   = Carbon::create(2026, 2, 28);
+
+        $statuses = ['hadir', 'hadir', 'hadir', 'hadir', 'izin', 'alpha']; // 70% hadir
+
+        for ($date = $start; $date <= $end; $date->addDay()) {
+
+            if ($date->isWeekend()) continue;
+
+            for ($karyawan = 1; $karyawan <= 5; $karyawan++) {
+
+                $status = $statuses[array_rand($statuses)];
+
+                DB::table('absensi')->insert([
+                    'karyawan_id' => $karyawan,
+                    'tanggal' => $date->toDateString(),
+                    'jam_masuk' => $status === 'hadir' ? '08:00:00' : null,
+                    'jam_pulang' => $status === 'hadir' ? '17:00:00' : null,
+                    'foto_masuk' => 'masuk.jpg',
+                    'foto_pulang' => 'pulang.jpg',
+                    'status' => $status,
+                    'keterangan' => null,
+                ]);
+            }
         }
 
         /*
@@ -177,13 +190,19 @@ class DatabaseSeeder extends Seeder
         | LEMBUR
         |--------------------------------------------------------------------------
         */
-        DB::table('lembur')->insert([
-            ['karyawan_id' => 1, 'tanggal' => now(), 'status' => 'pending'],
-            ['karyawan_id' => 2, 'tanggal' => now(), 'status' => 'pending'],
-            ['karyawan_id' => 3, 'tanggal' => now(), 'status' => 'pending'],
-            ['karyawan_id' => 4, 'tanggal' => now(), 'status' => 'ditolak'],
-            ['karyawan_id' => 5, 'tanggal' => now(), 'status' => 'disetujui'],
-        ]);
+        $lemburData = [];
+
+        foreach ([1, 2] as $bulan) {
+            for ($i = 1; $i <= 10; $i++) {
+                $lemburData[] = [
+                    'karyawan_id' => rand(1, 5),
+                    'tanggal' => Carbon::create(2026, $bulan, rand(1, 28)),
+                    'status' => collect(['disetujui', 'disetujui', 'pending', 'ditolak'])->random(),
+                ];
+            }
+        }
+
+        DB::table('lembur')->insert($lemburData);
 
         /*
         |--------------------------------------------------------------------------
@@ -191,11 +210,11 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         DB::table('pelanggaran')->insert([
-            ['karyawan_id' => 1, 'tanggal' => now(), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
-            ['karyawan_id' => 2, 'tanggal' => now(), 'pelanggaran' => 'Alpha', 'status' => 'sedang', 'potongan' => 150000],
-            ['karyawan_id' => 3, 'tanggal' => now(), 'pelanggaran' => 'Pulang Cepat', 'status' => 'sedang', 'potongan' => 75000],
-            ['karyawan_id' => 4, 'tanggal' => now(), 'pelanggaran' => 'Tidak Absen', 'status' => 'berat', 'potongan' => 100000],
-            ['karyawan_id' => 5, 'tanggal' => now(), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
+            ['karyawan_id' => 1, 'tanggal' => Carbon::create(2026, 1, 6), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
+            ['karyawan_id' => 2, 'tanggal' => Carbon::create(2026, 1, 9), 'pelanggaran' => 'Alpha', 'status' => 'sedang', 'potongan' => 150000],
+            ['karyawan_id' => 3, 'tanggal' => Carbon::create(2026, 1, 15), 'pelanggaran' => 'Pulang Cepat', 'status' => 'sedang', 'potongan' => 75000],
+            ['karyawan_id' => 4, 'tanggal' => Carbon::create(2026, 1, 18), 'pelanggaran' => 'Tidak Absen', 'status' => 'berat', 'potongan' => 100000],
+            ['karyawan_id' => 5, 'tanggal' => Carbon::create(2026, 1, 22), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
         ]);
 
         /*
@@ -203,25 +222,23 @@ class DatabaseSeeder extends Seeder
         | CUTI
         |--------------------------------------------------------------------------
         */
-        DB::table('cuti')->insert([
-            ['karyawan_id' => 1, 'jenis_pengajuan' => 'izin', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(1), 'alasan' => 'Keluarga', 'status' => 'pending'],
-            ['karyawan_id' => 2, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(2), 'alasan' => 'Liburan', 'status' => 'pending'],
-            ['karyawan_id' => 3, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now(), 'alasan' => 'Demam', 'status' => 'disetujui'],
-            ['karyawan_id' => 4, 'jenis_pengajuan' => 'izin', 'tanggal_mulai' => now(), 'tanggal_selesai' => now(), 'alasan' => 'Urusan pribadi', 'status' => 'ditolak'],
-            ['karyawan_id' => 5, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(3), 'alasan' => 'Pernikahan', 'status' => 'pending'],
-        ]);
+        $cutiData = [];
 
-        /*
-        |--------------------------------------------------------------------------
-        | GAJI
-        |--------------------------------------------------------------------------
-        */
-        DB::table('gaji')->insert([
-            ['karyawan_id' => 1, 'bulan' => 1, 'tahun' => 2025, 'gaji_pokok' => 3000000, 'total_lembur' => 100000, 'total_potongan' => 50000, 'total_gaji' => 3050000],
-            ['karyawan_id' => 2, 'bulan' => 1, 'tahun' => 2025, 'gaji_pokok' => 3000000, 'total_lembur' => 50000, 'total_potongan' => 150000, 'total_gaji' => 2900000],
-            ['karyawan_id' => 3, 'bulan' => 1, 'tahun' => 2025, 'gaji_pokok' => 4500000, 'total_lembur' => 150000, 'total_potongan' => 75000, 'total_gaji' => 4575000],
-            ['karyawan_id' => 4, 'bulan' => 1, 'tahun' => 2025, 'gaji_pokok' => 4500000, 'total_lembur' => 0, 'total_potongan' => 100000, 'total_gaji' => 4400000],
-            ['karyawan_id' => 5, 'bulan' => 1, 'tahun' => 2025, 'gaji_pokok' => 6500000, 'total_lembur' => 200000, 'total_potongan' => 50000, 'total_gaji' => 6650000],
-        ]);
+        foreach ([1, 2] as $bulan) {
+            for ($i = 1; $i <= 6; $i++) {
+                $startDate = Carbon::create(2026, $bulan, rand(1, 25));
+
+                $cutiData[] = [
+                    'karyawan_id' => rand(1, 5),
+                    'jenis_pengajuan' => collect(['cuti', 'izin'])->random(),
+                    'tanggal_mulai' => $startDate,
+                    'tanggal_selesai' => $startDate->copy()->addDays(rand(0, 2)),
+                    'alasan' => 'Keperluan pribadi',
+                    'status' => collect(['pending', 'disetujui', 'ditolak'])->random(),
+                ];
+            }
+        }
+
+        DB::table('cuti')->insert($cutiData);
     }
 }

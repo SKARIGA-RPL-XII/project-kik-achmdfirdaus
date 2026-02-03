@@ -1,36 +1,66 @@
-import { PlaceholderPattern } from '@/components/ui/placeholder-pattern';
-import AppLayout from '@/layouts/app-layout';
-import { dashboard } from '@/routes';
-import { type BreadcrumbItem } from '@/types';
-import { Head } from '@inertiajs/react';
+import AppLayout from '@/layouts/app-layout'
+import { Head } from '@inertiajs/react'
+import { dashboard } from '@/routes'
+import { type BreadcrumbItem } from '@/types'
+
+import { Users, AlertTriangle, Clock } from 'lucide-react'
+import StatCard from '@/components/stat-card'
+import TodayAttendance from '@/components/attendace'
+import WeeklyChart from '@/components/weekly-chart'
+import MiniCalendar from '@/components/mini-calendar'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Admin',
-        href: dashboard().url,
-    },
-];
+    { title: 'Admin', href: dashboard().url },
+]
 
-export default function Dashboard() {
+export default function Dashboard(props: any) {
+
+    const stats = props.stats ?? {
+        hadirBulanIni: 0,
+        pelanggaranBulanIni: 0,
+        pendingTotal: 0,
+    }
+
+    const today = props.today ?? { hadir: 0, total: 0 }
+    const weeklyData = props.weeklyData ?? []
+    const kalender = props.kalender ?? []
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
-            <div className="flex h-full flex-1 flex-col gap-4 overflow-x-auto rounded-xl p-4">
-                <div className="grid auto-rows-min gap-4 md:grid-cols-3">
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
-                    <div className="relative aspect-video overflow-hidden rounded-xl border border-sidebar-border/70 dark:border-sidebar-border">
-                        <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
-                    </div>
+
+            <div className="p-4 space-y-6">
+
+                <div className="grid md:grid-cols-3 gap-4">
+                    <StatCard
+                        title="Kehadiran Bulan Ini"
+                        value={stats.hadirBulanIni}
+                        icon={<Users />}
+                    />
+
+                    <StatCard
+                        title="Pelanggaran Bulan Ini"
+                        value={stats.pelanggaranBulanIni}
+                        icon={<AlertTriangle />}
+                    />
+
+                    <StatCard
+                        title="Pengajuan Pending"
+                        value={stats.pendingTotal}
+                        icon={<Clock />}
+                    />
                 </div>
-                <div className="relative min-h-[100vh] flex-1 overflow-hidden rounded-xl border border-sidebar-border/70 md:min-h-min dark:border-sidebar-border">
-                    <PlaceholderPattern className="absolute inset-0 size-full stroke-neutral-900/20 dark:stroke-neutral-100/20" />
+
+                <div className="grid lg:grid-cols-3 gap-6">
+
+                    <div className="lg:col-span-2 space-y-6">
+                        <TodayAttendance data={today} />
+                        <WeeklyChart data={weeklyData} />
+                    </div>
+
+                    <MiniCalendar events={kalender} />
                 </div>
             </div>
         </AppLayout>
-    );
+    )
 }

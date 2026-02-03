@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AdminController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\MainController;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
@@ -19,6 +20,8 @@ Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
 Route::get('/app', function () {
     return Inertia::render('dashboard');
 })->name('dashboard');
+
+Route::get('/app/dashboard', [MainController::class, 'index'])->name('app.dashboard');
 
 Route::get('/app/jabatan', [AdminController::class, 'jabatan'])->name('app.jabatan');
 Route::post('/app/jabatan', [AdminController::class, 'jabatanStore'])->name('app.jabatan.store');
@@ -44,6 +47,17 @@ Route::delete('/app/lembur/{id}', [AdminController::class, 'lemburDestroy'])->na
 Route::get('/app/cuti', [AdminController::class, 'cuti'])->name('app.cuti');
 Route::put('/app/cuti/{id}/status', [AdminController::class, 'cutiUpdate'])->name('app.cuti.status');
 Route::delete('/app/cuti/{id}', [AdminController::class, 'cutiDestroy'])->name('app.cuti.destroy');
+
+Route::get('/app/pelanggaran', [AdminController::class, 'pelanggaran']);
+Route::post('/app/pelanggaran', [AdminController::class, 'pelanggaranStore']);
+Route::put('/app/pelanggaran/{id}', [AdminController::class, 'pelanggaranUpdate']);
+Route::delete('/app/pelanggaran/{id}', [AdminController::class, 'pelanggaranDestroy']);
+
+Route::get('/app/gaji', [AdminController::class, 'gaji'])->name('app.gaji');
+Route::post('/app/gaji', [AdminController::class, 'gajiStore']);
+Route::put('/app/gaji/{id}', [AdminController::class, 'gajiUpdate']);
+Route::delete('/app/gaji/{id}', [AdminController::class, 'gajiDestroy']);
+Route::post('/app/gaji/generate', [AdminController::class, 'generate']);
 
 
 require __DIR__ . '/settings.php';

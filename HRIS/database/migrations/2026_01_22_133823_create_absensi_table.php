@@ -16,7 +16,7 @@ return new class extends Migration
             $table->foreignId('karyawan_id')->constrained('karyawan')->onDelete('cascade');
 
             $table->date('tanggal');
-            $table->time('jam_masuk');
+            $table->time('jam_masuk')->nullable();
             $table->time('jam_pulang')->nullable();
             $table->string('foto_masuk')->nullable();
             $table->string('foto_pulang',)->nullable();

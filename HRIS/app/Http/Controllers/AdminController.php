@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Cuti;
 use App\Models\Divisi;
+use App\Models\Gaji;
 use App\Models\Jabatan;
 use App\Models\Kalender;
 use App\Models\Karyawan;
 use App\Models\Lembur;
+use App\Models\Pelanggaran;
 use App\Models\User;
+use App\Services\PayrollService;
 use Illuminate\Http\Request;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
@@ -113,7 +116,6 @@ class AdminController extends Controller
             return redirect()->route('app.divisi')->with('error', $e->getMessage());
         }
     }
-
     public function kalender()
     {
         return Inertia::render('admin/kalender/index', [
@@ -162,7 +164,6 @@ class AdminController extends Controller
             return redirect()->route('app.kalender')->with('error', $e->getMessage());
         }
     }
-
     public function karyawan()
     {
         $karyawanData = Karyawan::with([
@@ -202,7 +203,7 @@ class AdminController extends Controller
             'karyawan.jabatan',
             'karyawan.divisi'
         ])
-            ->latest()
+            ->orderBy('tanggal', 'DESC')
             ->get()
             ->map(function ($item) {
                 return [
@@ -223,8 +224,6 @@ class AdminController extends Controller
             'lemburData' => $lemburData,
         ]);
     }
-
-
     public function lemburUpdate(Request $request, $id)
     {
         $lembur = Lembur::findOrFail($id);
@@ -244,7 +243,6 @@ class AdminController extends Controller
 
         return back()->with('success', 'Status lembur berhasil diperbarui');
     }
-
     public function lemburDestroy($id)
     {
         try {
@@ -262,7 +260,7 @@ class AdminController extends Controller
             'karyawan.jabatan',
             'karyawan.divisi'
         ])
-            ->latest()
+            ->orderBy('tanggal_mulai', 'DESC')
             ->get()
             ->map(function ($item) {
                 return [
@@ -301,7 +299,6 @@ class AdminController extends Controller
 
         return back()->with('success', 'Status cuti berhasil diperbarui');
     }
-
     public function cutiDestroy($id)
     {
         try {
@@ -311,6 +308,81 @@ class AdminController extends Controller
             return redirect()->route('app.cuti')->with('success', 'Data berhasil dihapus.');
         } catch (\Exception $e) {
             return redirect()->route('app.cuti')->with('error', $e->getMessage());
+        }
+    }
+    public function pelanggaran()
+    {
+        $pelanggaranData = Pelanggaran::with([
+            'karyawan.user'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->karyawan->user->name ?? '-',
+                    'nip' => $item->karyawan->nip ?? '-',
+                    'tanggal' => $item->tanggal,
+                    'pelanggaran' => $item->pelanggaran,
+                    'status' => $item->status,
+                    'potongan' => $item->potongan,
+                ];
+            });
+
+        return Inertia::render('admin/pelanggaran/index', [
+            'pelanggaranData' => $pelanggaranData,
+        ]);
+    }
+    public function gaji()
+    {
+        $gajiData = Gaji::with([
+            'karyawan.user'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+
+                    'nama' => $item->karyawan->user->name ?? '-',
+                    'nip' => $item->karyawan->nip ?? '-',
+
+                    'bulan' => $item->bulan,
+                    'tahun' => $item->tahun,
+
+                    'gaji_pokok' => $item->gaji_pokok,
+                    'total_lembur' => $item->total_lembur,
+                    'total_potongan' => $item->total_potongan,
+                    'total_gaji' => $item->total_gaji,
+
+                    'karyawan_id' => $item->karyawan_id,
+                ];
+            });
+
+        return Inertia::render('admin/gaji/index', [
+            'gajiData' => $gajiData,
+            'karyawanList' => Karyawan::with('user')->get()
+                ->map(fn($k) => [
+                    'id' => $k->id,
+                    'nama' => $k->user->name
+                ])
+        ]);
+    }
+    public function generate(PayrollService $service)
+    {
+        $service->generate();
+
+        return back()->with('success', 'Payroll berhasil digenerate');
+    }
+    public function gajiDestroy($id)
+    {
+        try {
+
+            Gaji::findOrFail($id)->delete();
+
+            return redirect()->route('app.gaji')->with('success', 'Data berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('app.gaji')->with('error', $e->getMessage());
         }
     }
 }

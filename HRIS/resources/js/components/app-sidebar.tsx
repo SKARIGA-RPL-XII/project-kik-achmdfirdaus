@@ -13,7 +13,19 @@ import {
 import { dashboard } from '@/routes'
 import { type NavItem } from '@/types'
 import { Link } from '@inertiajs/react'
-import { BookOpen, Folder, LayoutGrid, Briefcase, Users, Calendar, Building } from 'lucide-react'
+import {
+    LayoutGrid,
+    Folder,
+    Briefcase,
+    Users,
+    CalendarDays,
+    Building2,
+    Plane,
+    Clock,
+    AlertTriangle,
+    Wallet,
+    BookOpen,
+} from 'lucide-react'
 import AppLogo from './app-logo'
 
 const mainNavItems: NavItem[] = [
@@ -22,26 +34,43 @@ const mainNavItems: NavItem[] = [
         href: dashboard(),
         icon: LayoutGrid,
     },
+
     {
         title: 'Master Data',
         icon: Folder,
         children: [
             { title: 'Jabatan', href: '/app/jabatan', icon: Briefcase },
-            { title: 'Divisi', href: '/app/divisi', icon: Building },
-            { title: 'Kalender', href: '/app/kalender', icon: Calendar },
-            { title: 'Karyawan', href: '/app/karyawan', icon: Users, }
+            { title: 'Divisi', href: '/app/divisi', icon: Building2 },
+            { title: 'Kalender', href: '/app/kalender', icon: CalendarDays },
+            { title: 'Karyawan', href: '/app/karyawan', icon: Users },
         ],
     },
+
     {
         title: 'Cuti',
         href: '/app/cuti',
-        icon: LayoutGrid,
-    }, {
+        icon: Plane,
+    },
+
+    {
         title: 'Lembur',
         href: '/app/lembur',
-        icon: LayoutGrid,
+        icon: Clock,
+    },
+
+    {
+        title: 'Pelanggaran',
+        href: '/app/pelanggaran',
+        icon: AlertTriangle,
+    },
+
+    {
+        title: 'Gaji',
+        href: '/app/gaji',
+        icon: Wallet,
     },
 ]
+
 
 const footerNavItems: NavItem[] = [
     {
