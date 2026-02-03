@@ -32,6 +32,15 @@ const mainNavItems: NavItem[] = [
             { title: 'Karyawan', href: '/app/karyawan', icon: Users, }
         ],
     },
+    {
+        title: 'Cuti',
+        href: '/app/cuti',
+        icon: LayoutGrid,
+    }, {
+        title: 'Lembur',
+        href: '/app/lembur',
+        icon: LayoutGrid,
+    },
 ]
 
 const footerNavItems: NavItem[] = [

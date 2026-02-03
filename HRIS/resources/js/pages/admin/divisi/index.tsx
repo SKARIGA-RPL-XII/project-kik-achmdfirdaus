@@ -1,64 +1,40 @@
 import AppLayout from '@/layouts/app-layout'
 import { Head, router, usePage } from '@inertiajs/react'
-import { useMemo, useState } from 'react'
+import { useState } from 'react'
 import { Button } from '@/components/ui/button'
 import ModalDelete from '@/components/modal-delete'
 import ModalForm from '@/components/modal'
-import { formatRupiah } from '@/lib/format'
 import Alert from '@/components/alert'
-import SearchInput from '@/components/search'
-import Pagination from '@/components/pagination'
-import Table from '@/components/table'
+import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
 
-const PER_PAGE = 5
+type DivisiData = {
+    id: number
+    nama: string
+}
 
-export default function Index({ divisi }: any) {
+interface PageProps {
+    divisi: DivisiData[]
+}
+
+export default function Index({ divisi }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
             title: 'Divisi',
             href: '/app/divisi',
         },
-    ];
-
-    const [modalOpen, setModalOpen] = useState(false)
-    const [editData, setEditData] = useState<any>(null)
-    const [deleteOpen, setDeleteOpen] = useState(false)
-    const [deleteId, setDeleteId] = useState<number | null>(null)
-
-    const [search, setSearch] = useState('')
-    const [page, setPage] = useState(1)
+    ]
 
     const { flash } = usePage().props as any
 
+    const [modalOpen, setModalOpen] = useState(false)
+    const [editData, setEditData] = useState<DivisiData | null>(null)
+    const [deleteOpen, setDeleteOpen] = useState(false)
+    const [deleteId, setDeleteId] = useState<number | null>(null)
+
     const divisiFields = [
-        { name: 'nama', label: 'Nama Dvisi', required: true },
+        { name: 'nama', label: 'Nama Divisi', required: true },
     ]
-
-    const sourceData = Array.isArray(divisi)
-        ? divisi
-        : Array.isArray(divisi?.data)
-            ? divisi.data
-            : []
-
-    const filteredData = useMemo(() => {
-        let data = [...sourceData]
-
-        if (search) {
-            data = data.filter((item: any) =>
-                item.nama.toLowerCase().includes(search.toLowerCase())
-            )
-        }
-
-        return data
-    }, [sourceData, search])
-
-    const totalPage = Math.ceil(filteredData.length / PER_PAGE)
-
-    const paginatedData = useMemo(() => {
-        const start = (page - 1) * PER_PAGE
-        return filteredData.slice(start, start + PER_PAGE)
-    }, [filteredData, page])
 
     function openDelete(id: number) {
         setDeleteId(id)
@@ -77,29 +53,59 @@ export default function Index({ divisi }: any) {
         })
     }
 
+    const columns: ColumnDef<DivisiData>[] = [
+        {
+            header: 'No',
+            accessorKey: 'id',
+            className: 'w-24 pl-8 text-center',
+            render: (_, index) => (
+                <span className="text-gray-500">{index + 1}</span>
+            ),
+        },
+        {
+            header: 'Nama Divisi',
+            accessorKey: 'nama',
+            render: (item) => (
+                <span className="font-medium text-gray-900">{item.nama}</span>
+            ),
+        },
+        {
+            header: '',
+            className: 'text-center w-40',
+            render: (item) => (
+                <div className="flex justify-center gap-2">
+                    <Button
+                        size="sm"
+                        onClick={() => {
+                            setEditData(item)
+                            setModalOpen(true)
+                        }}
+                    >
+                        Edit
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => openDelete(item.id)}
+                    >
+                        Hapus
+                    </Button>
+                </div>
+            ),
+        },
+    ]
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Divisi" />
+            <Head title="Manajemen Divisi" />
 
-            {flash?.success && (
-                <Alert type="success" message={flash.success} />
-            )}
-            {flash?.error && (
-                <Alert type="error" message={flash.error} />
-            )}
+            <div className="p-6 max-w-7xl mx-auto space-y-6">
 
-            <div className="space-y-4">
-                <div className="flex items-center justify-between gap-3">
-                    <div className="flex gap-2">
-                        <SearchInput
-                            value={search}
-                            onChange={(v) => {
-                                setSearch(v)
-                                setPage(1)
-                            }}
-                            placeholder="Cari Divisi..."
-                        />
-                    </div>
+                {flash?.success && <Alert type="success" message={flash.success} />}
+                {flash?.error && <Alert type="error" message={flash.error} />}
+
+                <div className="flex items-center justify-between">
 
                     <Button
                         onClick={() => {
@@ -111,47 +117,14 @@ export default function Index({ divisi }: any) {
                     </Button>
                 </div>
 
-                <Table
-                    data={paginatedData}
-                    columns={[
-                        {
-                            label: 'Nama',
-                            render: (row: any) => row.nama,
-                        },
-                        {
-                            label: 'Aksi',
-                            render: (row: any) => (
-                                <div className="flex gap-2">
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            setEditData(row)
-                                            setModalOpen(true)
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>
-
-                                    <Button
-                                        size="sm"
-                                        variant="destructive"
-                                        onClick={() =>
-                                            openDelete(row.id)
-                                        }
-                                    >
-                                        Hapus
-                                    </Button>
-                                </div>
-                            ),
-                        },
-                    ]}
-                />
-
-                <Pagination
-                    page={page}
-                    totalPage={totalPage}
-                    onChange={setPage}
-                />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <DynamicTable
+                        title="Daftar Divisi"
+                        data={divisi}
+                        columns={columns}
+                        searchKeys={['nama']}
+                    />
+                </div>
             </div>
 
             <ModalForm
@@ -175,7 +148,7 @@ export default function Index({ divisi }: any) {
             <ModalDelete
                 open={deleteOpen}
                 title="Hapus Divisi"
-                description="Data Divisi yang dihapus tidak dapat dikembalikan."
+                description="Data divisi yang dihapus tidak dapat dikembalikan."
                 onClose={() => setDeleteOpen(false)}
                 onConfirm={handleDelete}
             />

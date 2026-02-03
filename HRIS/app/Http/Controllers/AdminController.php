@@ -165,29 +165,86 @@ class AdminController extends Controller
 
     public function karyawan()
     {
+        $karyawanData = Karyawan::with([
+            'user',
+            'divisi',
+            'jabatan'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+
+                    'nama' => $item->user->name ?? '-',
+                    'nip' => $item->nip ?? '-',
+                    'jk' => $item->jk ?? '-',
+                    'tanggal_lahir' => $item->tanggal_lahir,
+
+                    'divisi' => $item->divisi->nama ?? '-',
+                    'jabatan' => $item->jabatan->nama ?? '-',
+
+                    'divisi_id' => $item->divisi_id,
+                    'jabatan_id' => $item->jabatan_id,
+                ];
+            });
+
         return Inertia::render('admin/karyawan/index', [
-            'karyawan' => Karyawan::with('user', 'divisi', 'jabatan')->get(),
-            'divisi' => Divisi::latest()->get(),
-            'jabatan' => Jabatan::latest()->get(),
-            'users' => User::latest()->get(),
+            'karyawan' => $karyawanData,
+            'divisi' => Divisi::select('id', 'nama')->latest()->get(),
+            'jabatan' => Jabatan::select('id', 'nama')->latest()->get(),
         ]);
     }
     public function lembur()
     {
-        return Inertia::render('admin/lembur/index', ['lembur' => Lembur::with('karyawan')->latest()->get()]);
+        $lemburData = Lembur::with([
+            'karyawan.user',
+            'karyawan.jabatan',
+            'karyawan.divisi'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->karyawan->user->name ?? '-',
+                    'nip' => $item->karyawan->nip ?? '-',
+                    'jabatan' => $item->karyawan->jabatan->nama ?? '-',
+                    'departemen' => $item->karyawan->divisi->nama ?? '-',
+                    'tanggal' => $item->tanggal,
+                    'jam_mulai' => $item->jam_mulai,
+                    'jam_selesai' => $item->jam_selesai,
+                    'keterangan' => $item->keterangan ?? '-',
+                    'status' => $item->status,
+                ];
+            });
+
+        return Inertia::render('admin/lembur/index', [
+            'lemburData' => $lemburData,
+        ]);
     }
+
+
     public function lemburUpdate(Request $request, $id)
     {
-        $request->validate([
-            'status' => 'required|in:disetujui,ditolak'
-        ]);
         $lembur = Lembur::findOrFail($id);
-        $lembur->update([
-            'status' => $request->status
+
+        $request->validate([
+            'action' => 'required|in:approve,reject'
         ]);
 
-        return back()->with('success', 'Status lembur diperbarui');
+        $status = match ($request->action) {
+            'approve' => 'disetujui',
+            'reject' => 'ditolak',
+        };
+
+        $lembur->update([
+            'status' => $status
+        ]);
+
+        return back()->with('success', 'Status lembur berhasil diperbarui');
     }
+
     public function lemburDestroy($id)
     {
         try {
@@ -201,20 +258,50 @@ class AdminController extends Controller
     }
     public function cuti()
     {
-        return Inertia::render('admin/cuti/index', ['cuti' => Cuti::with('karyawan')->latest()->get()]);
-    }
-    public function cutiUpdate(Request $request, $id)
-    {
-        $request->validate([
-            'status' => 'required|in:disetujui,ditolak'
+        $cutiData = Cuti::with([
+            'karyawan.jabatan',
+            'karyawan.divisi'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'karyawan_nama' => $item->karyawan->user->name ?? '-',
+                    'karyawan_nip' => $item->karyawan->nip,
+                    'karyawan_jabatan' => $item->karyawan->jabatan->nama ?? '-',
+                    'karyawan_departemen' => $item->karyawan->divisi->nama ?? '-',
+                    'tanggal_mulai' => $item->tanggal_mulai,
+                    'tanggal_selesai' => $item->tanggal_selesai,
+                    'jumlah_hari' => $item->tanggal_mulai->diffInDays($item->tanggal_selesai) + 1,
+                    'jenis_cuti' => $item->jenis_pengajuan,
+                    'alasan' => $item->alasan,
+                    'status' => $item->status,
+                ];
+            });
+
+        return Inertia::render('admin/cuti/index', [
+            'cutiData' => $cutiData,
         ]);
-        $lembur = Cuti::findOrFail($id);
-        $lembur->update([
-            'status' => $request->status
+    }
+    public function cutiUpdate(Request $request, Cuti $cuti)
+    {
+        $validated = $request->validate([
+            'action' => ['required', 'in:approve,reject'],
         ]);
 
-        return back()->with('success', 'Status cuti diperbarui');
+        $statusMap = [
+            'approve' => 'disetujui',
+            'reject' => 'ditolak',
+        ];
+
+        $cuti->update([
+            'status' => $statusMap[$validated['action']],
+        ]);
+
+        return back()->with('success', 'Status cuti berhasil diperbarui');
     }
+
     public function cutiDestroy($id)
     {
         try {

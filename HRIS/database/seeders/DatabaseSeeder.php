@@ -204,11 +204,11 @@ class DatabaseSeeder extends Seeder
         |--------------------------------------------------------------------------
         */
         DB::table('cuti')->insert([
-            ['karyawan_id' => 1, 'jenis_pengajuan' => 'izin', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(1), 'alasan' => 'Keluarga', 'status' => 'disetujui'],
+            ['karyawan_id' => 1, 'jenis_pengajuan' => 'izin', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(1), 'alasan' => 'Keluarga', 'status' => 'pending'],
             ['karyawan_id' => 2, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(2), 'alasan' => 'Liburan', 'status' => 'pending'],
             ['karyawan_id' => 3, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now(), 'alasan' => 'Demam', 'status' => 'disetujui'],
             ['karyawan_id' => 4, 'jenis_pengajuan' => 'izin', 'tanggal_mulai' => now(), 'tanggal_selesai' => now(), 'alasan' => 'Urusan pribadi', 'status' => 'ditolak'],
-            ['karyawan_id' => 5, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(3), 'alasan' => 'Pernikahan', 'status' => 'disetujui'],
+            ['karyawan_id' => 5, 'jenis_pengajuan' => 'cuti', 'tanggal_mulai' => now(), 'tanggal_selesai' => now()->addDays(3), 'alasan' => 'Pernikahan', 'status' => 'pending'],
         ]);
 
         /*

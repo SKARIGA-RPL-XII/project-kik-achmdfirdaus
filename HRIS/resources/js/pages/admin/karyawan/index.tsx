@@ -3,66 +3,46 @@ import { Head, router, usePage } from '@inertiajs/react'
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import ModalDelete from '@/components/modal-delete'
-import Pagination from '@/components/pagination'
-import Table from '@/components/table'
-import { BreadcrumbItem } from '@/types'
 import ModalKaryawanForm from '@/components/modal-karyawan'
-import SearchInput from '@/components/search'
+import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
+import Alert from '@/components/alert'
+import { BreadcrumbItem } from '@/types'
 
-const PER_PAGE = 5
+type KaryawanData = {
+    id: number
+    nama: string
+    nip: string
+    jk: string
+    tanggal_lahir: string
+    divisi: string
+    jabatan: string
+    divisi_id: number
+    jabatan_id: number
+}
 
-export default function Index({ karyawan, divisi, jabatan }: any) {
+interface PageProps {
+    karyawan: KaryawanData[]
+    divisi: any[]
+    jabatan: any[]
+}
+
+export default function Index({ karyawan, divisi, jabatan }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'Data Karyawan', href: '/app/karyawan' },
     ]
 
+    const { flash } = usePage().props as any
+
     const [modalOpen, setModalOpen] = useState(false)
-    const [editData, setEditData] = useState<any>(null)
+    const [editData, setEditData] = useState<KaryawanData | null>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
 
-    const [search, setSearch] = useState('')
-    const [page, setPage] = useState(1)
     const [filterDivisi, setFilterDivisi] = useState('')
     const [filterJabatan, setFilterJabatan] = useState('')
 
-    const { flash } = usePage().props as any
-
-    const sourceData = Array.isArray(karyawan)
-        ? karyawan
-        : Array.isArray(karyawan?.data)
-            ? karyawan.data
-            : []
-
-    const filteredData = useMemo(() => {
-        let data = [...sourceData]
-
-        // Filter by search
-        if (search) {
-            data = data.filter((item: any) =>
-                item.user.name.toLowerCase().includes(search.toLowerCase())
-            )
-        }
-
-        // Filter by divisi
-        if (filterDivisi) {
-            data = data.filter((item: any) => item.divisi_id === Number(filterDivisi))
-        }
-
-        // Filter by jabatan
-        if (filterJabatan) {
-            data = data.filter((item: any) => item.jabatan_id === Number(filterJabatan))
-        }
-
-        return data
-    }, [sourceData, search, filterDivisi, filterJabatan])
-
-    const totalPage = Math.ceil(filteredData.length / PER_PAGE)
-
-    const paginatedData = useMemo(() => {
-        const start = (page - 1) * PER_PAGE
-        return filteredData.slice(start, start + PER_PAGE)
-    }, [filteredData, page])
+    const formatDate = (date: string) =>
+        new Date(date).toLocaleDateString('id-ID')
 
     function openDelete(id: number) {
         setDeleteId(id)
@@ -71,6 +51,7 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
 
     function handleDelete() {
         if (!deleteId) return
+
         router.delete(`/app/karyawan/${deleteId}`, {
             preserveScroll: true,
             onFinish: () => {
@@ -80,32 +61,102 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
         })
     }
 
+    const filteredData = useMemo(() => {
+        let data = [...karyawan]
+
+        if (filterDivisi) {
+            data = data.filter((i) => i.divisi_id === Number(filterDivisi))
+        }
+
+        if (filterJabatan) {
+            data = data.filter((i) => i.jabatan_id === Number(filterJabatan))
+        }
+
+        return data
+    }, [karyawan, filterDivisi, filterJabatan])
+
+    const columns: ColumnDef<KaryawanData>[] = [
+        {
+            header: 'No',
+            accessorKey: 'id',
+            className: 'w-24 pl-8 text-center',
+            render: (_, index) => (
+                <span className="text-gray-500">{index + 1}</span>
+            ),
+        },
+        {
+            header: 'Nama',
+            accessorKey: 'nama',
+            render: (item) => (
+                <span className="font-medium text-gray-900">{item.nama}</span>
+            ),
+        },
+        {
+            header: 'NIP',
+            accessorKey: 'nip',
+        },
+        {
+            header: 'JK',
+            accessorKey: 'jk',
+            render: (item) => (
+                <span>{item.jk === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
+            ),
+        },
+        {
+            header: 'Tanggal Lahir',
+            accessorKey: 'tanggal_lahir',
+            render: (item) => formatDate(item.tanggal_lahir),
+        },
+        {
+            header: 'Divisi',
+            accessorKey: 'divisi',
+        },
+        {
+            header: 'Jabatan',
+            accessorKey: 'jabatan',
+        },
+        {
+            header: '',
+            className: 'text-center w-40',
+            render: (item) => (
+                <div className="flex justify-center gap-2">
+                    <Button
+                        size="sm"
+                        onClick={() => {
+                            setEditData(item)
+                            setModalOpen(true)
+                        }}
+                    >
+                        Edit
+                    </Button>
+
+                    <Button
+                        size="sm"
+                        variant="destructive"
+                        onClick={() => openDelete(item.id)}
+                    >
+                        Hapus
+                    </Button>
+                </div>
+            ),
+        },
+    ]
+
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Karyawan" />
+            <Head title="Manajemen Karyawan" />
 
-            {flash?.success && <p className="text-green-600">{flash.success}</p>}
-            {flash?.error && <p className="text-red-600">{flash.error}</p>}
+            <div className="p-6 max-w-7xl mx-auto space-y-6">
 
-            <div className="space-y-4">
-                <div className="flex flex-wrap items-center justify-between gap-3">
-                    <div className="flex gap-2 flex-wrap">
-                        <SearchInput
-                            value={search}
-                            onChange={(v) => {
-                                setSearch(v)
-                                setPage(1)
-                            }}
-                            placeholder="Cari karyawan..."
-                        />
+                {flash?.success && <Alert type="success" message={flash.success} />}
+                {flash?.error && <Alert type="error" message={flash.error} />}
 
+                <div className="flex items-center justify-between">
+                    <div className="flex gap-2">
                         <select
                             value={filterDivisi}
-                            onChange={(e) => {
-                                setFilterDivisi(e.target.value)
-                                setPage(1)
-                            }}
-                            className="border rounded px-3 py-2 text-sm"
+                            onChange={(e) => setFilterDivisi(e.target.value)}
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm"
                         >
                             <option value="">Semua Divisi</option>
                             {divisi.map((d: any) => (
@@ -117,11 +168,8 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
 
                         <select
                             value={filterJabatan}
-                            onChange={(e) => {
-                                setFilterJabatan(e.target.value)
-                                setPage(1)
-                            }}
-                            className="border rounded px-3 py-2 text-sm"
+                            onChange={(e) => setFilterJabatan(e.target.value)}
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm"
                         >
                             <option value="">Semua Jabatan</option>
                             {jabatan.map((j: any) => (
@@ -130,51 +178,26 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
                                 </option>
                             ))}
                         </select>
-                    </div>
 
-                    <Button
-                        onClick={() => {
-                            setEditData(null)
-                            setModalOpen(true)
-                        }}
-                    >
-                        Tambah Karyawan
-                    </Button>
+                        <Button
+                            onClick={() => {
+                                setEditData(null)
+                                setModalOpen(true)
+                            }}
+                        >
+                            Tambah Karyawan
+                        </Button>
+                    </div>
                 </div>
 
-                <Table
-                    data={paginatedData}
-                    columns={[
-                        { label: 'Nama', render: (row: any) => row.user.name },
-                        { label: 'Divisi', render: (row: any) => row.divisi?.nama },
-                        { label: 'Jabatan', render: (row: any) => row.jabatan?.nama },
-                        {
-                            label: 'Aksi',
-                            render: (row: any) => (
-                                <div className="flex gap-2">
-                                    <Button
-                                        size="sm"
-                                        onClick={() => {
-                                            setEditData(row)
-                                            setModalOpen(true)
-                                        }}
-                                    >
-                                        Edit
-                                    </Button>
-                                    <Button
-                                        size="sm"
-                                        variant="destructive"
-                                        onClick={() => openDelete(row.id)}
-                                    >
-                                        Hapus
-                                    </Button>
-                                </div>
-                            ),
-                        },
-                    ]}
-                />
-
-                <Pagination page={page} totalPage={totalPage} onChange={setPage} />
+                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+                    <DynamicTable
+                        title="Daftar Karyawan"
+                        data={filteredData}
+                        columns={columns}
+                        searchKeys={['nama', 'nip']}
+                    />
+                </div>
             </div>
 
             <ModalKaryawanForm
