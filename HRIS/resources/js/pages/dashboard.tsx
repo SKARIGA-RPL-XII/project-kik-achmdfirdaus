@@ -1,6 +1,6 @@
 import AppLayout from '@/layouts/app-layout'
 import { Head } from '@inertiajs/react'
-import { dashboard } from '@/routes'
+// import { dashboard } from '@/routes'
 import { type BreadcrumbItem } from '@/types'
 
 import { Users, AlertTriangle, Clock } from 'lucide-react'
@@ -8,13 +8,13 @@ import StatCard from '@/components/stat-card'
 import TodayAttendance from '@/components/attendace'
 import WeeklyChart from '@/components/weekly-chart'
 import MiniCalendar from '@/components/mini-calendar'
+import WorkClock from '@/components/clock'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Admin', href: dashboard().url },
+    { title: 'Admin', href: '/app' },
 ]
 
 export default function Dashboard(props: any) {
-
     const stats = props.stats ?? {
         hadirBulanIni: 0,
         pelanggaranBulanIni: 0,
@@ -29,36 +29,41 @@ export default function Dashboard(props: any) {
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            <div className="p-4 space-y-6">
+            <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
 
-                <div className="grid md:grid-cols-3 gap-4">
+                {/* ================= STATS ================= */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <StatCard
                         title="Kehadiran Bulan Ini"
                         value={stats.hadirBulanIni}
-                        icon={<Users />}
+                        icon={<Users className="w-5 h-5 text-emerald-600" />}
                     />
 
                     <StatCard
                         title="Pelanggaran Bulan Ini"
                         value={stats.pelanggaranBulanIni}
-                        icon={<AlertTriangle />}
+                        icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
                     />
 
                     <StatCard
                         title="Pengajuan Pending"
                         value={stats.pendingTotal}
-                        icon={<Clock />}
+                        icon={<Clock className="w-5 h-5 text-amber-600" />}
                     />
                 </div>
 
-                <div className="grid lg:grid-cols-3 gap-6">
 
-                    <div className="lg:col-span-2 space-y-6">
+                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+
+                    <div className="lg:col-span-2 space-y-8">
                         <TodayAttendance data={today} />
                         <WeeklyChart data={weeklyData} />
                     </div>
 
-                    <MiniCalendar events={kalender} />
+                    <div className="flex flex-col gap-8">
+                        <MiniCalendar events={kalender} />
+                        <WorkClock />
+                    </div>
                 </div>
             </div>
         </AppLayout>

@@ -21,7 +21,7 @@ Route::get('/app', function () {
     return Inertia::render('dashboard');
 })->name('dashboard');
 
-Route::get('/app/dashboard', [MainController::class, 'index'])->name('app.dashboard');
+Route::get('/app', [MainController::class, 'index'])->name('app.dashboard');
 
 Route::get('/app/jabatan', [AdminController::class, 'jabatan'])->name('app.jabatan');
 Route::post('/app/jabatan', [AdminController::class, 'jabatanStore'])->name('app.jabatan.store');
@@ -38,6 +38,7 @@ Route::post('/app/kalender', [AdminController::class, 'kalenderStore'])->name('a
 Route::put('/app/kalender/{id}', [AdminController::class, 'kalenderUpdate'])->name('app.kalender.update');
 Route::delete('/app/kalender/{id}', [AdminController::class, 'kalenderDestroy'])->name('app.kalender.destroy');
 
+Route::get('/app/absensi', [AdminController::class, 'absensi'])->name('app.absensi');
 Route::get('/app/karyawan', [AdminController::class, 'karyawan'])->name('app.karyawan');
 
 Route::get('/app/lembur', [AdminController::class, 'lembur'])->name('app.lembur');

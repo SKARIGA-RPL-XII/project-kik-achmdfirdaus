@@ -23,6 +23,6 @@ class Absensi extends Model
     ];
     public function karyawan()
     {
-        return $this->hasMany(Karyawan::class);
+        return $this->belongsTo(Karyawan::class, 'karyawan_id');
     }
 }

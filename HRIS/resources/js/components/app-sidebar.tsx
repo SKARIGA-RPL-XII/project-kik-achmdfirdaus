@@ -10,7 +10,7 @@ import {
     SidebarMenuButton,
     SidebarMenuItem,
 } from '@/components/ui/sidebar'
-import { dashboard } from '@/routes'
+// import { dashboard } from '@/routes'
 import { type NavItem } from '@/types'
 import { Link } from '@inertiajs/react'
 import {
@@ -25,13 +25,14 @@ import {
     AlertTriangle,
     Wallet,
     BookOpen,
+    CalendarCheck,
 } from 'lucide-react'
 import AppLogo from './app-logo'
 
 const mainNavItems: NavItem[] = [
     {
         title: 'Dashboard',
-        href: dashboard(),
+        href: '/app',
         icon: LayoutGrid,
     },
 
@@ -44,6 +45,11 @@ const mainNavItems: NavItem[] = [
             { title: 'Kalender', href: '/app/kalender', icon: CalendarDays },
             { title: 'Karyawan', href: '/app/karyawan', icon: Users },
         ],
+    },
+    {
+        title: 'Absensi',
+        href: '/app/absensi',
+        icon: CalendarCheck,
     },
 
     {
@@ -92,7 +98,7 @@ export function AppSidebar() {
                 <SidebarMenu>
                     <SidebarMenuItem>
                         <SidebarMenuButton size="lg" asChild>
-                            <Link href={dashboard()} prefetch>
+                            <Link href='/app' prefetch>
                                 <AppLogo />
                             </Link>
                         </SidebarMenuButton>

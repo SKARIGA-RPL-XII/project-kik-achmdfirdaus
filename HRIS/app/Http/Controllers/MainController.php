@@ -47,8 +47,20 @@ class MainController extends Controller
         });
 
         $kalender = Kalender::select('tanggal', 'jenis_hari', 'keterangan')->get();
-
-        return Inertia::render('admin/dashboard/index', [
+        // dd([
+        //     'stats' => [
+        //         'hadirBulanIni' => $hadirBulanIni,
+        //         'pelanggaranBulanIni' => $pelanggaranBulanIni,
+        //         'pendingTotal' => $pendingCuti + $pendingLembur,
+        //     ],
+        //     'today' => [
+        //         'hadir' => $hadirHariIni,
+        //         'total' => $totalKaryawan,
+        //     ],
+        //     'weeklyData' => $weekly,
+        //     'kalender' => $kalender,
+        // ]);
+        return Inertia::render('dashboard', [
             'stats' => [
                 'hadirBulanIni' => $hadirBulanIni,
                 'pelanggaranBulanIni' => $pelanggaranBulanIni,

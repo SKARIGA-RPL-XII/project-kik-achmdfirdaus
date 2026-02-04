@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
 use App\Models\Cuti;
 use App\Models\Divisi;
 use App\Models\Gaji;
@@ -164,6 +165,35 @@ class AdminController extends Controller
             return redirect()->route('app.kalender')->with('error', $e->getMessage());
         }
     }
+    public function absensi()
+    {
+        $data = Absensi::with([
+            'karyawan.user',
+            'karyawan.jabatan',
+            'karyawan.divisi'
+        ])
+            ->latest()
+            ->get()
+            ->map(function ($item) {
+                return [
+                    'id' => $item->id,
+                    'nama' => $item->karyawan->user->name ?? '-',
+                    'nip' => $item->karyawan->nip,
+                    'jabatan' => $item->karyawan->jabatan->nama ?? '-',
+                    'departemen' => $item->karyawan->divisi->nama ?? '-',
+                    'tanggal' => $item->tanggal,
+                    'jam_masuk' => $item->jam_masuk,
+                    'jam_pulang' => $item->jam_pulang,
+                    'status' => $item->status,
+                    'keterangan' => $item->keterangan,
+                ];
+            });
+
+        return inertia('admin/absensi/index', [
+            'absensiData' => $data
+        ]);
+    }
+
     public function karyawan()
     {
         $karyawanData = Karyawan::with([
