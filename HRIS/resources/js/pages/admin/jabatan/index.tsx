@@ -21,6 +21,8 @@ interface PageProps {
 
 export default function Index({ jabatan }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
+        { title: 'Master Data', href: '' },
         {
             title: 'Jabatan',
             href: '/app/jabatan',

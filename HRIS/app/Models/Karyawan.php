@@ -15,7 +15,7 @@ class Karyawan extends Model
         'nip',
         'nama_karyawan',
         'jenis_kelamin',
-        'tanggal_masuk',
+        'tanggal_lahir',
     ];
 
     public function user()

@@ -25,6 +25,10 @@ interface PageProps {
 export default function AbsensiIndex({ absensiData }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         {
+            title: 'App',
+            href: '/app',
+        },
+        {
             title: 'Riwayat Absensi',
             href: '/app/absensi',
         },
@@ -113,7 +117,7 @@ export default function AbsensiIndex({ absensiData }: PageProps) {
                         ? 'bg-emerald-100 text-emerald-600'
                         : item.status === 'izin'
                             ? 'bg-blue-100 text-blue-600'
-                            : item.status === 'sakit'
+                            : item.status === 'cuti'
                                 ? 'bg-yellow-100 text-yellow-700'
                                 : 'bg-red-100 text-red-600'
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->foreignId('jabatan_id')->constrained('jabatan');
             $table->foreignId('divisi_id')->constrained('divisi');
 
-            $table->string('nip', 10)->unique();
+            $table->string('nip', 15)->unique();
             $table->enum('jk', ['L', 'P']);
             $table->date('tanggal_lahir');
             $table->timestamps();

@@ -23,6 +23,7 @@ interface PageProps {
 
 export default function LemburIndex({ lemburData }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
         {
             title: 'Pengajuan Lembur',
             href: '/app/lembur',

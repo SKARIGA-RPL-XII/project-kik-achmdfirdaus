@@ -29,6 +29,7 @@ interface PageProps {
 
 export default function Index({ gajiData, karyawanList }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
         { title: 'Gaji', href: '/app/gaji' },
     ]
 

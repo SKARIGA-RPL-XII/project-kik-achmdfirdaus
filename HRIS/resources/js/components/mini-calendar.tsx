@@ -9,24 +9,31 @@ export default function MiniCalendar({ events = [] }: any) {
 
     const year = current.getFullYear()
     const month = current.getMonth()
-
     const today = new Date()
 
+    /*
+    |--------------------------------------------------------------------------
+    | Holidays Indonesia
+    |--------------------------------------------------------------------------
+    */
     const holidays = useMemo(() => {
         const hd = new Holidays('ID')
         return hd.getHolidays(year)
     }, [year])
 
-    const isNationalHoliday = (day: number) => {
-        return holidays.find((h: any) => {
+    const isNationalHoliday = (day: number) =>
+        holidays.find((h: any) => {
             const d = new Date(h.date)
             return d.getDate() === day && d.getMonth() === month
         })
-    }
 
+    /*
+    |--------------------------------------------------------------------------
+    | Setup kalender
+    |--------------------------------------------------------------------------
+    */
     const firstDay = new Date(year, month, 1).getDay()
     const daysInMonth = new Date(year, month + 1, 0).getDate()
-
     const offset = (firstDay + 6) % 7
 
     const monthLabel = current.toLocaleDateString('id-ID', {
@@ -34,11 +41,8 @@ export default function MiniCalendar({ events = [] }: any) {
         year: 'numeric',
     })
 
-    const prevMonth = () =>
-        setCurrent(new Date(year, month - 1, 1))
-
-    const nextMonth = () =>
-        setCurrent(new Date(year, month + 1, 1))
+    const prevMonth = () => setCurrent(new Date(year, month - 1, 1))
+    const nextMonth = () => setCurrent(new Date(year, month + 1, 1))
 
     const getEvent = (day: number) =>
         events.find((e: any) => {
@@ -50,6 +54,11 @@ export default function MiniCalendar({ events = [] }: any) {
             )
         })
 
+    /*
+    |--------------------------------------------------------------------------
+    | Build 42 cells (tinggi selalu sama)
+    |--------------------------------------------------------------------------
+    */
     const cells: (number | null)[] = []
 
     for (let i = 0; i < offset; i++) cells.push(null)
@@ -57,10 +66,14 @@ export default function MiniCalendar({ events = [] }: any) {
     while (cells.length < 42) cells.push(null)
 
     return (
-        <div className="bg-white rounded-2xl shadow-sm border p-6">
+        <div className="bg-white rounded-2xl shadow-sm border p-6 h-[340px] flex flex-col">
 
+            {/* ================= HEADER ================= */}
             <div className="flex items-center justify-between mb-4">
-                <button onClick={prevMonth} className="p-2 rounded-lg hover:bg-gray-100">
+                <button
+                    onClick={prevMonth}
+                    className="p-2 rounded-lg hover:bg-gray-100"
+                >
                     <ChevronLeft size={18} />
                 </button>
 
@@ -68,20 +81,26 @@ export default function MiniCalendar({ events = [] }: any) {
                     {monthLabel}
                 </h3>
 
-                <button onClick={nextMonth} className="p-2 rounded-lg hover:bg-gray-100">
+                <button
+                    onClick={nextMonth}
+                    className="p-2 rounded-lg hover:bg-gray-100"
+                >
                     <ChevronRight size={18} />
                 </button>
             </div>
 
+            {/* ================= DAY LABEL ================= */}
             <div className="grid grid-cols-7 text-xs text-gray-400 mb-2">
                 {dayNames.map((d) => (
-                    <div key={d}>{d}</div>
+                    <div key={d} className="text-center">{d}</div>
                 ))}
             </div>
 
-            <div className="grid grid-cols-7 gap-2 text-sm">
+            {/* ================= GRID (FULL HEIGHT) ================= */}
+            <div className="flex-1 grid grid-cols-7 gap-2 text-sm">
+
                 {cells.map((day, i) => {
-                    if (!day) return <div key={i} className="h-8" />
+                    if (!day) return <div key={i} />
 
                     const event = getEvent(day)
                     const national = isNationalHoliday(day)
@@ -108,35 +127,29 @@ export default function MiniCalendar({ events = [] }: any) {
                     return (
                         <div
                             key={i}
-                            title={
-                                national?.name ||
-                                event?.keterangan ||
-                                ''
-                            }
+                            title={national?.name || event?.keterangan || ''}
                             className={`
-                h-8 flex items-center justify-center rounded-md
-                ${color}
-            `}
+                                flex items-center justify-center
+                                rounded-md h-9
+                                ${color}
+                            `}
                         >
                             {day}
                         </div>
                     )
                 })}
-
             </div>
 
-
-            <div className="flex flex-wrap gap-4 text-xs mt-5 text-gray-500">
+            <div className="flex flex-wrap gap-4 text-xs text-gray-500 pt-4 border-t mt-4">
                 <Legend color="bg-emerald-600" label="Hari Ini" />
                 <Legend color="bg-yellow-400" label="Libur Kantor" />
                 <Legend color="bg-red-400" label="Libur Nasional" />
                 <Legend color="bg-blue-400" label="Event" />
             </div>
-
+            {/* ================= LEGEND ================= */}
         </div>
     )
 }
-
 
 function Legend({ color, label }: any) {
     return (

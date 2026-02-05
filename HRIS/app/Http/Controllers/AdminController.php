@@ -14,6 +14,8 @@ use App\Models\Pelanggaran;
 use App\Models\User;
 use App\Services\PayrollService;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Inertia\Inertia;
 
@@ -193,7 +195,6 @@ class AdminController extends Controller
             'absensiData' => $data
         ]);
     }
-
     public function karyawan()
     {
         $karyawanData = Karyawan::with([
@@ -208,6 +209,7 @@ class AdminController extends Controller
                     'id' => $item->id,
 
                     'nama' => $item->user->name ?? '-',
+                    'email' => $item->user->email ?? '-',
                     'nip' => $item->nip ?? '-',
                     'jk' => $item->jk ?? '-',
                     'tanggal_lahir' => $item->tanggal_lahir,
@@ -225,6 +227,123 @@ class AdminController extends Controller
             'divisi' => Divisi::select('id', 'nama')->latest()->get(),
             'jabatan' => Jabatan::select('id', 'nama')->latest()->get(),
         ]);
+    }
+    public function karyawanStore(Request $request)
+    {
+        try {
+
+            $validated = $request->validate([
+                'nama' => 'required|string|max:100',
+                'email' => 'required|email|unique:users,email',
+                'jk' => 'required',
+                'tanggal_lahir' => 'required|date',
+                'divisi_id' => 'required',
+                'jabatan_id' => 'required',
+            ]);
+
+            DB::transaction(function () use ($validated) {
+                $companyCode = '002';
+
+                $tgl = \Carbon\Carbon::parse($validated['tanggal_lahir']);
+
+                $tanggalPart = $tgl->format('Ydm');
+                $count = Karyawan::whereDate('tanggal_lahir', $validated['tanggal_lahir'])
+                    ->lockForUpdate()
+                    ->count();
+
+                $urut = str_pad($count + 1, 3, '0', STR_PAD_LEFT);
+                $nip = $companyCode . $tanggalPart . $urut;
+                $password = str_replace('-', '', $validated['tanggal_lahir']);
+
+                $user = User::create([
+                    'name' => $validated['nama'],
+                    'email' => $validated['email'],
+                    'password' => Hash::make($password),
+                    'role' => 'user',
+                ]);
+
+                Karyawan::create([
+                    'user_id' => $user->id,
+                    'nip' => $nip,
+                    'jk' => $validated['jk'],
+                    'tanggal_lahir' => $validated['tanggal_lahir'],
+                    'divisi_id' => $validated['divisi_id'],
+                    'jabatan_id' => $validated['jabatan_id'],
+                ]);
+            });
+
+            return redirect()->route('app.karyawan')
+                ->with('success', 'Karyawan berhasil ditambahkan.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->route('app.karyawan')
+                ->with('error', $e->getMessage());
+        }
+    }
+    public function karyawanUpdate(Request $request, $id)
+    {
+        try {
+
+            $karyawan = Karyawan::with('user')->findOrFail($id);
+
+            $validated = $request->validate([
+                'nama' => 'required|string|max:100',
+                'email' => 'required|email|unique:users,email,' . $karyawan->user_id,
+                'nip' => 'required|unique:karyawan,nip,' . $karyawan->id,
+                'jk' => 'required',
+                'tanggal_lahir' => 'required|date',
+                'divisi_id' => 'required',
+                'jabatan_id' => 'required',
+            ]);
+
+            DB::transaction(function () use ($karyawan, $validated) {
+
+                $karyawan->user->update([
+                    'name' => $validated['nama'],
+                    'email' => $validated['email'],
+                ]);
+
+                $karyawan->update([
+                    'nip' => $validated['nip'],
+                    'jk' => $validated['jk'],
+                    'tanggal_lahir' => $validated['tanggal_lahir'],
+                    'divisi_id' => $validated['divisi_id'],
+                    'jabatan_id' => $validated['jabatan_id'],
+                ]);
+            });
+
+            return redirect()->route('app.karyawan')
+                ->with('success', 'Karyawan berhasil diperbarui.');
+        } catch (ValidationException $e) {
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+            return redirect()->route('app.karyawan')
+                ->with('error', $e->getMessage());
+        }
+    }
+    public function karyawanDestroy($id)
+    {
+        try {
+
+            DB::transaction(function () use ($id) {
+
+                $karyawan = Karyawan::with('user')->findOrFail($id);
+
+                $karyawan->user()->delete();
+                $karyawan->delete();
+            });
+
+            return redirect()->route('app.karyawan')
+                ->with('success', 'Karyawan berhasil dihapus.');
+        } catch (\Exception $e) {
+            return redirect()->route('app.karyawan')
+                ->with('error', $e->getMessage());
+        }
     }
     public function lembur()
     {

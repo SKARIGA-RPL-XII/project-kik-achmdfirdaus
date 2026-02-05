@@ -11,6 +11,7 @@ import {
     Plus,
 } from 'lucide-react';
 import React, { useEffect, useMemo, useState } from 'react';
+import { BreadcrumbItem } from '@/types'
 
 interface KalenderItem {
     id?: number;
@@ -27,6 +28,14 @@ const normalizeDate = (date: string | Date) =>
     new Date(date).toISOString().slice(0, 10);
 
 export default function Index({ kalender = [] }: PageProps) {
+    const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
+        { title: 'Master Data', href: '' },
+        {
+            title: 'Kalender',
+            href: '/app/jabatan',
+        },
+    ]
     const [currentDate, setCurrentDate] = useState(new Date());
     const [showEventModal, setShowEventModal] = useState(false);
     const [modal, setModal] = useState(false);
@@ -138,7 +147,7 @@ export default function Index({ kalender = [] }: PageProps) {
 
     return (
         <div className="min-h-screen bg-[#f4f7f6] font-sans">
-            <AppLayout>
+            <AppLayout breadcrumbs={breadcrumbs}>
                 <Head title="Libur / Cuti Kalender" />
 
                 <div className="p-8">

@@ -11,7 +11,7 @@ import MiniCalendar from '@/components/mini-calendar'
 import WorkClock from '@/components/clock'
 
 const breadcrumbs: BreadcrumbItem[] = [
-    { title: 'Admin', href: '/app' },
+    { title: 'App', href: '/app' },
 ]
 
 export default function Dashboard(props: any) {
@@ -32,7 +32,7 @@ export default function Dashboard(props: any) {
             <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
 
                 {/* ================= STATS ================= */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
                     <StatCard
                         title="Kehadiran Bulan Ini"
                         value={stats.hadirBulanIni}
@@ -62,7 +62,6 @@ export default function Dashboard(props: any) {
 
                     <div className="flex flex-col gap-8">
                         <MiniCalendar events={kalender} />
-                        <WorkClock />
                     </div>
                 </div>
             </div>

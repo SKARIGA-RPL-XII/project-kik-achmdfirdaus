@@ -162,7 +162,7 @@ class DatabaseSeeder extends Seeder
         $start = Carbon::create(2026, 1, 1);
         $end   = Carbon::create(2026, 2, 28);
 
-        $statuses = ['hadir', 'hadir', 'hadir', 'hadir', 'izin', 'alpha']; // 70% hadir
+        $statuses = ['hadir', 'hadir', 'hadir', 'cuti', 'izin', 'alpha']; // 70% hadir
 
         for ($date = $start; $date <= $end; $date->addDay()) {
 

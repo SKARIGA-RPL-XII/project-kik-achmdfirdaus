@@ -28,7 +28,9 @@ interface PageProps {
 
 export default function Index({ karyawan, divisi, jabatan }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
-        { title: 'Data Karyawan', href: '/app/karyawan' },
+        { title: 'App', href: '/app' },
+        { title: 'Master Data', href: '' },
+        { title: 'Karyawan', href: '/app/karyawan' },
     ]
 
     const { flash } = usePage().props as any

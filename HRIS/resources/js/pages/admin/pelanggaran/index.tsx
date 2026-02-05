@@ -25,6 +25,7 @@ interface PageProps {
 
 export default function Index({ pelanggaranData }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
         { title: 'Pelanggaran', href: '/app/pelanggaran' },
     ]
 

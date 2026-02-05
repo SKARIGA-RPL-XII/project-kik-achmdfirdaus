@@ -19,6 +19,8 @@ interface PageProps {
 
 export default function Index({ divisi }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
+        { title: 'Master Data', href: '' },
         {
             title: 'Divisi',
             href: '/app/divisi',

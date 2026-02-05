@@ -26,6 +26,7 @@ interface PageProps {
 
 export default function CutiKaryawan({ cutiData }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
+        { title: 'App', href: '/app' },
         {
             title: 'Pengajuan Cuti',
             href: '/app/cuti',

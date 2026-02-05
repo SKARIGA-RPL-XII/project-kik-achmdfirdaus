@@ -39,7 +39,11 @@ Route::put('/app/kalender/{id}', [AdminController::class, 'kalenderUpdate'])->na
 Route::delete('/app/kalender/{id}', [AdminController::class, 'kalenderDestroy'])->name('app.kalender.destroy');
 
 Route::get('/app/absensi', [AdminController::class, 'absensi'])->name('app.absensi');
+
 Route::get('/app/karyawan', [AdminController::class, 'karyawan'])->name('app.karyawan');
+Route::post('/app/karyawan', [AdminController::class, 'karyawanStore'])->name('app.karyawan.store');
+Route::put('/app/karyawan/{id}', [AdminController::class, 'karyawanUpdate'])->name('app.karyawan.update');
+Route::delete('/app/karyawan/{id}', [AdminController::class, 'karyawanDestroy'])->name('app.karyawan.delete');
 
 Route::get('/app/lembur', [AdminController::class, 'lembur'])->name('app.lembur');
 Route::put('/app/lembur/{id}/status', [AdminController::class, 'lemburUpdate'])->name('app.lembur.status');
