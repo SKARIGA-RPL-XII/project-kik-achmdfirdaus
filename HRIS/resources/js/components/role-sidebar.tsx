@@ -25,12 +25,6 @@ export default function RoleSidebar() {
 
     const [openProfile, setOpenProfile] = useState(false)
 
-    /*
-    |--------------------------------------------------------------------------
-    | AUTO OPEN MASTER BY ROUTE
-    |--------------------------------------------------------------------------
-    */
-
     const masterRoutes = [
         '/app/jabatan',
         '/app/divisi',
@@ -50,12 +44,6 @@ export default function RoleSidebar() {
 
     const openMaster = manualOpen ?? routeOpen
 
-
-    /*
-    |--------------------------------------------------------------------------
-    | MENUS
-    |--------------------------------------------------------------------------
-    */
 
     const adminMenus = [
         { title: 'Dashboard', href: '/app', icon: LayoutGrid },
@@ -78,18 +66,17 @@ export default function RoleSidebar() {
 
     const userMenus = [
         { title: 'Dashboard', href: '/app', icon: LayoutGrid },
-        { title: 'Absensi Saya', href: '/app/absensi', icon: CalendarCheck },
-        { title: 'Cuti Saya', href: '/app/cuti', icon: Plane },
-        { title: 'Lembur Saya', href: '/app/lembur', icon: Clock },
-        { title: 'Gaji Saya', href: '/app/gaji', icon: Wallet },
+        { title: 'Absensi Saya', href: '/absensi', icon: CalendarCheck },
+        { title: 'Cuti Saya', href: '/cuti', icon: Plane },
+        { title: 'Lembur Saya', href: '/lembur', icon: Clock },
+        { title: 'Pelanggaran Saya', href: '/pelanggaran', icon: AlertTriangle },
+        { title: 'Gaji Saya', href: '/gaji', icon: Wallet },
     ]
 
     const menus = role === 'admin' ? adminMenus : userMenus
 
 
     return (
-        /* ❌ JANGAN fixed */
-        /* ✅ pakai h-screen shrink-0 */
         <aside className="w-64 h-screen shrink-0 flex flex-col bg-[#B50B08] text-white shadow-xl">
 
             {/* LOGO */}

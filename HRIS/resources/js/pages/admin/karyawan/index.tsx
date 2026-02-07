@@ -7,6 +7,8 @@ import ModalKaryawanForm from '@/components/modal-karyawan'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import Alert from '@/components/alert'
 import { BreadcrumbItem } from '@/types'
+import ActionKaryawanMenu from '@/components/action-menu-karyawan'
+import ModalPelanggaran from '@/components/modal-pelanggaran'
 
 type KaryawanData = {
     id: number
@@ -20,13 +22,8 @@ type KaryawanData = {
     jabatan_id: number
 }
 
-interface PageProps {
-    karyawan: KaryawanData[]
-    divisi: any[]
-    jabatan: any[]
-}
+export default function Index({ karyawan, divisi, jabatan }: any) {
 
-export default function Index({ karyawan, divisi, jabatan }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'App', href: '/app' },
         { title: 'Master Data', href: '' },
@@ -39,6 +36,8 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
     const [editData, setEditData] = useState<KaryawanData | null>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
+    const [pelanggaranOpen, setPelanggaranOpen] = useState(false)
+    const [selectedKaryawan, setSelectedKaryawan] = useState<KaryawanData | null>(null)
 
     const [filterDivisi, setFilterDivisi] = useState('')
     const [filterJabatan, setFilterJabatan] = useState('')
@@ -66,22 +65,19 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
     const filteredData = useMemo(() => {
         let data = [...karyawan]
 
-        if (filterDivisi) {
-            data = data.filter((i) => i.divisi_id === Number(filterDivisi))
-        }
+        if (filterDivisi)
+            data = data.filter(i => i.divisi_id === Number(filterDivisi))
 
-        if (filterJabatan) {
-            data = data.filter((i) => i.jabatan_id === Number(filterJabatan))
-        }
+        if (filterJabatan)
+            data = data.filter(i => i.jabatan_id === Number(filterJabatan))
 
         return data
     }, [karyawan, filterDivisi, filterJabatan])
 
+
     const columns: ColumnDef<KaryawanData>[] = [
         {
             header: 'No',
-            accessorKey: 'id',
-            className: 'w-24 pl-8 text-center',
             render: (_, index) => (
                 <span className="text-gray-500">{index + 1}</span>
             ),
@@ -89,9 +85,6 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
         {
             header: 'Nama',
             accessorKey: 'nama',
-            render: (item) => (
-                <span className="font-medium text-gray-900">{item.nama}</span>
-            ),
         },
         {
             header: 'NIP',
@@ -99,14 +92,10 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
         },
         {
             header: 'JK',
-            accessorKey: 'jk',
-            render: (item) => (
-                <span>{item.jk === 'L' ? 'Laki-laki' : 'Perempuan'}</span>
-            ),
+            render: (item) => item.jk === 'L' ? 'Laki-laki' : 'Perempuan',
         },
         {
             header: 'Tanggal Lahir',
-            accessorKey: 'tanggal_lahir',
             render: (item) => formatDate(item.tanggal_lahir),
         },
         {
@@ -119,30 +108,29 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
         },
         {
             header: '',
-            className: 'text-center w-40',
+            className: 'text-center w-14',
             render: (item) => (
-                <div className="flex justify-center gap-2">
-                    <Button
-                        size="sm"
-                        onClick={() => {
-                            setEditData(item)
-                            setModalOpen(true)
-                        }}
-                    >
-                        Edit
-                    </Button>
+                <ActionKaryawanMenu
+                    onEdit={() => {
+                        setEditData(item)
+                        setModalOpen(true)
+                    }}
+                    onDelete={() => openDelete(item.id)}
+                    onReset={() =>
+                        router.post(`/app/karyawan/${item.id}/reset-password`)
+                    }
+                    onPelanggaran={() => {
+                        setSelectedKaryawan(item)
+                        setPelanggaranOpen(true)
+                    }}
 
-                    <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => openDelete(item.id)}
-                    >
-                        Hapus
-                    </Button>
-                </div>
+
+                />
+
             ),
         },
     ]
+
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
@@ -153,46 +141,47 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
                 {flash?.success && <Alert type="success" message={flash.success} />}
                 {flash?.error && <Alert type="error" message={flash.error} />}
 
-                <div className="flex items-center justify-between">
+                <div className="flex justify-between items-center">
+
                     <div className="flex gap-2">
+
                         <select
                             value={filterDivisi}
                             onChange={(e) => setFilterDivisi(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm"
+                            className="px-3 py-2 border rounded-lg text-sm"
                         >
                             <option value="">Semua Divisi</option>
                             {divisi.map((d: any) => (
-                                <option key={d.id} value={d.id}>
-                                    {d.nama}
-                                </option>
+                                <option key={d.id} value={d.id}>{d.nama}</option>
                             ))}
                         </select>
 
                         <select
                             value={filterJabatan}
                             onChange={(e) => setFilterJabatan(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm"
+                            className="px-3 py-2 border rounded-lg text-sm"
                         >
                             <option value="">Semua Jabatan</option>
                             {jabatan.map((j: any) => (
-                                <option key={j.id} value={j.id}>
-                                    {j.nama}
-                                </option>
+                                <option key={j.id} value={j.id}>{j.nama}</option>
                             ))}
                         </select>
 
-                        <Button
-                            onClick={() => {
-                                setEditData(null)
-                                setModalOpen(true)
-                            }}
-                        >
-                            Tambah Karyawan
-                        </Button>
                     </div>
+
+                    <Button
+                        onClick={() => {
+                            setEditData(null)
+                            setModalOpen(true)
+                        }}
+                    >
+                        Tambah Karyawan
+                    </Button>
+
                 </div>
 
-                <div className="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+
+                <div className="bg-white rounded-xl shadow border overflow-hidden">
                     <DynamicTable
                         title="Daftar Karyawan"
                         data={filteredData}
@@ -213,10 +202,21 @@ export default function Index({ karyawan, divisi, jabatan }: PageProps) {
             <ModalDelete
                 open={deleteOpen}
                 title="Hapus Karyawan"
-                description="Data karyawan yang dihapus tidak dapat dikembalikan."
+                description="Data tidak dapat dikembalikan."
                 onClose={() => setDeleteOpen(false)}
                 onConfirm={handleDelete}
             />
+            <ModalPelanggaran
+                open={pelanggaranOpen}
+                onClose={() => {
+                    setPelanggaranOpen(false)
+                    setSelectedKaryawan(null)
+                }}
+                karyawan={selectedKaryawan}
+            />
+
+
+
         </AppLayout>
     )
 }

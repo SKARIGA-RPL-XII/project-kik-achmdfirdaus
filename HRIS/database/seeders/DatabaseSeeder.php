@@ -25,32 +25,32 @@ class DatabaseSeeder extends Seeder
                 'role' => 'admin',
             ],
             [
-                'name' => 'Budi',
-                'email' => 'budi@hris.test',
+                'name' => 'Achmad Firdaus Ramadhani',
+                'email' => 'achmad@hris.test',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
-                'name' => 'Andi',
-                'email' => 'andi@hris.test',
+                'name' => 'Raysha AlFatikhah Wijaya',
+                'email' => 'raysha@hris.test',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
-                'name' => 'Siti',
-                'email' => 'siti@hris.test',
+                'name' => 'Farrel Rayo Setyabudi',
+                'email' => 'farrel@hris.test',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
-                'name' => 'Rina',
-                'email' => 'rina@hris.test',
+                'name' => 'Mohammad Farfan Maulana',
+                'email' => 'farfan@hris.test',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
-                'name' => 'Doni',
-                'email' => 'doni@hris.test',
+                'name' => 'Alfaluis Bintang Arsa',
+                'email' => 'bintang@hris.test',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
@@ -61,6 +61,7 @@ class DatabaseSeeder extends Seeder
         | JABATAN
         |--------------------------------------------------------------------------
         */
+
         DB::table('jabatan')->insert([
             ['nama' => 'Staff', 'gaji' => 3000000],
             ['nama' => 'Supervisor', 'gaji' => 4500000],
@@ -72,6 +73,7 @@ class DatabaseSeeder extends Seeder
         | DIVISI
         |--------------------------------------------------------------------------
         */
+
         DB::table('divisi')->insert([
             ['nama' => 'IT'],
             ['nama' => 'HRD'],
@@ -80,91 +82,52 @@ class DatabaseSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | KARYAWAN
+        | KARYAWAN + AUTO NIP
+        |--------------------------------------------------------------------------
+        | Format : YYYYDDMM + 3 digit
         |--------------------------------------------------------------------------
         */
-        DB::table('karyawan')->insert([
-            [
-                'user_id' => 2,
-                'jabatan_id' => 1,
-                'divisi_id' => 1,
-                'nip' => 'EMP001',
-                'jk' => 'L',
-                'tanggal_lahir' => '1999-01-10',
-            ],
-            [
-                'user_id' => 3,
-                'jabatan_id' => 1,
-                'divisi_id' => 1,
-                'nip' => 'EMP002',
-                'jk' => 'L',
-                'tanggal_lahir' => '2000-02-15',
-            ],
-            [
-                'user_id' => 4,
-                'jabatan_id' => 2,
-                'divisi_id' => 2,
-                'nip' => 'EMP003',
-                'jk' => 'P',
-                'tanggal_lahir' => '1998-07-20',
-            ],
-            [
-                'user_id' => 5,
-                'jabatan_id' => 2,
-                'divisi_id' => 3,
-                'nip' => 'EMP004',
-                'jk' => 'P',
-                'tanggal_lahir' => '1997-11-11',
-            ],
-            [
-                'user_id' => 6,
-                'jabatan_id' => 3,
-                'divisi_id' => 1,
-                'nip' => 'EMP005',
-                'jk' => 'L',
-                'tanggal_lahir' => '1995-03-05',
-            ],
-        ]);
+
+        $list = [
+            [2, '2007-01-10', 'L', 1, 1],
+            [3, '2007-02-15', 'P', 1, 1],
+            [4, '2007-07-20', 'L', 2, 2],
+            [5, '2007-11-11', 'L', 2, 3],
+            [6, '2007-03-05', 'L', 3, 1],
+        ];
+
+        $urut = 1;
+
+        foreach ($list as $k) {
+            [$userId, $tgl, $jk, $jabatan, $divisi] = $k;
+
+            $nip = Carbon::parse($tgl)->format('Ydm') .
+                str_pad($urut, 3, '0', STR_PAD_LEFT);
+
+            DB::table('karyawan')->insert([
+                'user_id' => $userId,
+                'nip' => $nip,
+                'jk' => $jk,
+                'tanggal_lahir' => $tgl,
+                'jabatan_id' => $jabatan,
+                'divisi_id' => $divisi,
+            ]);
+
+            $urut++;
+        }
 
         /*
         |--------------------------------------------------------------------------
-        | KALENDER
+        | ABSENSI (1 BULAN KEBELAKANG)
         |--------------------------------------------------------------------------
         */
-        DB::table('kalender')->insert([
-            [
-                'tanggal' => '2026-01-09',
-                'keterangan' => 'Cuti Bersama Kantor',
-                'jenis_hari' => 'cuti',
-            ],
-            [
-                'tanggal' => '2026-01-15',
-                'keterangan' => 'Company Gathering',
-                'jenis_hari' => 'event',
-            ],
-            [
-                'tanggal' => '2026-01-22',
-                'keterangan' => 'Training Internal',
-                'jenis_hari' => 'event',
-            ],
-            [
-                'tanggal' => '2026-01-27',
-                'keterangan' => 'Cuti Bersama Divisi IT',
-                'jenis_hari' => 'cuti',
-            ],
-        ]);
 
-        /*
-        |--------------------------------------------------------------------------
-        | ABSENSI
-        |--------------------------------------------------------------------------
-        */
-        $start = Carbon::create(2026, 1, 1);
-        $end   = Carbon::create(2026, 2, 28);
+        $start = now()->subMonth()->startOfDay();
+        $end   = now();
 
-        $statuses = ['hadir', 'hadir', 'hadir', 'cuti', 'izin', 'alpha']; // 70% hadir
+        $statuses = ['hadir', 'hadir', 'hadir', 'hadir', 'cuti', 'izin', 'alpha'];
 
-        for ($date = $start; $date <= $end; $date->addDay()) {
+        for ($date = $start->copy(); $date <= $end; $date->addDay()) {
 
             if ($date->isWeekend()) continue;
 
@@ -187,58 +150,79 @@ class DatabaseSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
+        | CUTI
+        |--------------------------------------------------------------------------
+        */
+
+        for ($i = 0; $i < 8; $i++) {
+
+            $start = now()->subDays(rand(1, 25));
+
+            DB::table('cuti')->insert([
+                'karyawan_id' => rand(1, 5),
+                'jenis_pengajuan' => collect(['cuti', 'izin'])->random(),
+                'tanggal_mulai' => $start,
+                'tanggal_selesai' => $start->copy()->addDays(rand(0, 2)),
+                'alasan' => 'Keperluan pribadi',
+                'status' => collect(['pending', 'disetujui', 'ditolak'])->random(),
+            ]);
+        }
+
+        /*
+        |--------------------------------------------------------------------------
         | LEMBUR
         |--------------------------------------------------------------------------
         */
-        $lemburData = [];
 
-        foreach ([1, 2] as $bulan) {
-            for ($i = 1; $i <= 10; $i++) {
-                $lemburData[] = [
-                    'karyawan_id' => rand(1, 5),
-                    'tanggal' => Carbon::create(2026, $bulan, rand(1, 28)),
-                    'status' => collect(['disetujui', 'disetujui', 'pending', 'ditolak'])->random(),
-                ];
-            }
+        for ($i = 0; $i < 10; $i++) {
+
+            DB::table('lembur')->insert([
+                'karyawan_id' => rand(1, 5),
+                'tanggal' => now()->subDays(rand(1, 30)),
+                'status' => collect(['pending', 'disetujui', 'ditolak'])->random(),
+            ]);
         }
-
-        DB::table('lembur')->insert($lemburData);
 
         /*
         |--------------------------------------------------------------------------
         | PELANGGARAN
         |--------------------------------------------------------------------------
         */
+
         DB::table('pelanggaran')->insert([
-            ['karyawan_id' => 1, 'tanggal' => Carbon::create(2026, 1, 6), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
-            ['karyawan_id' => 2, 'tanggal' => Carbon::create(2026, 1, 9), 'pelanggaran' => 'Alpha', 'status' => 'sedang', 'potongan' => 150000],
-            ['karyawan_id' => 3, 'tanggal' => Carbon::create(2026, 1, 15), 'pelanggaran' => 'Pulang Cepat', 'status' => 'sedang', 'potongan' => 75000],
-            ['karyawan_id' => 4, 'tanggal' => Carbon::create(2026, 1, 18), 'pelanggaran' => 'Tidak Absen', 'status' => 'berat', 'potongan' => 100000],
-            ['karyawan_id' => 5, 'tanggal' => Carbon::create(2026, 1, 22), 'pelanggaran' => 'Terlambat', 'status' => 'ringan', 'potongan' => 50000],
+            [
+                'karyawan_id' => 1,
+                'tanggal' => now()->subDays(5),
+                'pelanggaran' => 'Terlambat',
+                'status' => 'ringan',
+                'potongan' => 50000,
+            ],
+            [
+                'karyawan_id' => 3,
+                'tanggal' => now()->subDays(10),
+                'pelanggaran' => 'Alpha',
+                'status' => 'berat',
+                'potongan' => 150000,
+            ],
         ]);
 
         /*
         |--------------------------------------------------------------------------
-        | CUTI
+        | KALENDER
         |--------------------------------------------------------------------------
         */
-        $cutiData = [];
 
-        foreach ([1, 2] as $bulan) {
-            for ($i = 1; $i <= 6; $i++) {
-                $startDate = Carbon::create(2026, $bulan, rand(1, 25));
-
-                $cutiData[] = [
-                    'karyawan_id' => rand(1, 5),
-                    'jenis_pengajuan' => collect(['cuti', 'izin'])->random(),
-                    'tanggal_mulai' => $startDate,
-                    'tanggal_selesai' => $startDate->copy()->addDays(rand(0, 2)),
-                    'alasan' => 'Keperluan pribadi',
-                    'status' => collect(['pending', 'disetujui', 'ditolak'])->random(),
-                ];
-            }
-        }
-
-        DB::table('cuti')->insert($cutiData);
+        DB::table('kalender')->insert([
+            [
+                'tanggal' => now()->addDays(5),
+                'keterangan' => 'Cuti Bersama',
+                'jenis_hari' => 'cuti',
+            ],
+            [
+                'tanggal' => now()->addDays(10),
+                'keterangan' => 'Event Kantor',
+                'jenis_hari' => 'event',
+            ],
+        ]);
     }
 }

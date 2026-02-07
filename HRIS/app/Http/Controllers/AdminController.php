@@ -326,6 +326,22 @@ class AdminController extends Controller
                 ->with('error', $e->getMessage());
         }
     }
+    public function resetPassword($id)
+    {
+        try {
+            $karyawan = Karyawan::with('user')->findOrFail($id);
+
+            $password = str_replace('-', '', $karyawan->tanggal_lahir);
+
+            $karyawan->user->update([
+                'password' => Hash::make($password)
+            ]);
+
+            return back()->with('success', 'Password berhasil direset (tanggal lahir).');
+        } catch (\Exception $e) {
+            return back()->with('error', $e->getMessage());
+        }
+    }
     public function karyawanDestroy($id)
     {
         try {
@@ -482,6 +498,87 @@ class AdminController extends Controller
             'pelanggaranData' => $pelanggaranData,
         ]);
     }
+    public function pelanggaranStore(Request $request, $id)
+    {
+        // dd($request, $id);
+        try {
+
+            $validated = $request->validate([
+                'tanggal' => 'required|date',
+                'pelanggaran' => 'required|string|max:255',
+                'potongan' => 'required|integer|min:0',
+            ]);
+
+            DB::transaction(function () use ($validated, $id) {
+
+                Pelanggaran::create([
+                    'karyawan_id' => $id,
+                    'tanggal' => $validated['tanggal'],
+                    'pelanggaran' => $validated['pelanggaran'],
+                    'potongan' => $validated['potongan'],
+                ]);
+            });
+
+            return redirect()->back()
+                ->with('success', 'Pelanggaran berhasil ditambahkan.');
+        } catch (ValidationException $e) {
+
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+    public function pelanggaranUpdate(Request $request, $id)
+    {
+        try {
+
+            $validated = $request->validate([
+                'tanggal' => 'required|date',
+                'pelanggaran' => 'required|string|max:255',
+                'potongan' => 'required|integer|min:0',
+            ]);
+
+            DB::transaction(function () use ($validated, $id) {
+
+                $pelanggaran = Pelanggaran::findOrFail($id);
+
+                $pelanggaran->update([
+                    'tanggal' => $validated['tanggal'],
+                    'pelanggaran' => $validated['pelanggaran'],
+                    'potongan' => $validated['potongan'],
+                ]);
+            });
+
+            return redirect()->back()
+                ->with('success', 'Pelanggaran berhasil diperbarui.');
+        } catch (ValidationException $e) {
+
+            return redirect()->back()
+                ->withErrors($e->validator)
+                ->withInput();
+        } catch (\Exception $e) {
+
+            return redirect()->back()
+                ->with('error', $e->getMessage());
+        }
+    }
+    public function pelanggaranDestroy($id)
+    {
+        $pelanggaran = Pelanggaran::find($id);
+
+        if (!$pelanggaran) {
+            return back()->with('error', 'Data pelanggaran tidak ditemukan');
+        }
+
+        $pelanggaran->delete();
+
+        return back()->with('success', 'Pelanggaran berhasil dihapus');
+    }
+
     public function gaji()
     {
         $gajiData = Gaji::with([

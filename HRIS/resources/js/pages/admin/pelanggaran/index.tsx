@@ -8,6 +8,7 @@ import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { formatRupiah } from '@/lib/format'
 import Alert from '@/components/alert'
 import { BreadcrumbItem } from '@/types'
+import ModalPelanggaran from '@/components/modal-pelanggaran'
 
 type PelanggaranData = {
     id: number
@@ -31,8 +32,8 @@ export default function Index({ pelanggaranData }: PageProps) {
 
     const { flash } = usePage().props as any
 
-    const [modalOpen, setModalOpen] = useState(false)
-    const [editData, setEditData] = useState<any>(null)
+    const [pelanggaranOpen, setPelanggaranOpen] = useState(false)
+    const [selectedPelanggaran, setSelectedPelanggaran] = useState<any>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
     const [statusFilter, setStatusFilter] = useState('all')
@@ -108,8 +109,8 @@ export default function Index({ pelanggaranData }: PageProps) {
                     <Button
                         size="sm"
                         onClick={() => {
-                            setEditData(item)
-                            setModalOpen(true)
+                            setSelectedPelanggaran(item)
+                            setPelanggaranOpen(true)
                         }}
                     >
                         Edit
@@ -139,22 +140,13 @@ export default function Index({ pelanggaranData }: PageProps) {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-3 py-2 border rounded-lg text-sm"
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                     >
                         <option value="all">Semua Status</option>
                         <option value="ringan">Ringan</option>
                         <option value="sedang">Sedang</option>
                         <option value="berat">Berat</option>
                     </select>
-
-                    <Button
-                        onClick={() => {
-                            setEditData(null)
-                            setModalOpen(true)
-                        }}
-                    >
-                        Tambah Pelanggaran
-                    </Button>
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
@@ -166,22 +158,13 @@ export default function Index({ pelanggaranData }: PageProps) {
                     />
                 </div>
             </div>
-
-            <ModalForm
-                open={modalOpen}
-                title={editData ? 'Edit Pelanggaran' : 'Tambah Pelanggaran'}
-                fields={fields}
-                submitUrl={
-                    editData
-                        ? `/app/pelanggaran/${editData.id}`
-                        : '/app/pelanggaran'
-                }
-                method={editData ? 'put' : 'post'}
-                initialData={editData ?? {}}
+            <ModalPelanggaran
+                open={pelanggaranOpen}
                 onClose={() => {
-                    setModalOpen(false)
-                    setEditData(null)
+                    setPelanggaranOpen(false)
+                    setSelectedPelanggaran(null)
                 }}
+                pelanggaran={selectedPelanggaran}
             />
 
             <ModalDelete

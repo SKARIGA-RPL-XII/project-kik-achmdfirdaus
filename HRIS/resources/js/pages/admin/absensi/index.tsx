@@ -146,7 +146,7 @@ export default function AbsensiIndex({ absensiData }: PageProps) {
                     <select
                         value={statusFilter}
                         onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-emerald-500"
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                     >
                         <option value="">Semua Status</option>
                         <option value="hadir">Hadir</option>
@@ -159,14 +159,14 @@ export default function AbsensiIndex({ absensiData }: PageProps) {
                         type="date"
                         value={from}
                         onChange={(e) => setFrom(e.target.value)}
-                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-emerald-500"
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                     />
 
                     <input
                         type="date"
                         value={to}
                         onChange={(e) => setTo(e.target.value)}
-                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-emerald-500"
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                     />
                 </div>
 

@@ -121,7 +121,7 @@ function DynamicTable<T extends { id: string | number }>({
         },
         [],
     );
-    
+
 
     // Maintain focus after state updates
     useEffect(() => {
@@ -165,7 +165,7 @@ function DynamicTable<T extends { id: string | number }>({
                                     onFocus={() => setIsSearchFocused(true)}
                                     onBlur={() => setIsSearchFocused(false)}
                                     autoComplete="off"
-                                    className="h-10 w-full rounded-lg border-gray-200 bg-white pl-10 text-sm focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500"
+                                    className="h-10 w-full rounded-lg border-red-200 bg-white pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500"
                                 />
                             </div>
 
@@ -237,14 +237,14 @@ function DynamicTable<T extends { id: string | number }>({
                                             >
                                                 {col.render
                                                     ? col.render(
-                                                          item,
-                                                          startIndex + rowIdx,
-                                                      )
+                                                        item,
+                                                        startIndex + rowIdx,
+                                                    )
                                                     : col.accessorKey
-                                                      ? (item[
+                                                        ? (item[
                                                             col.accessorKey
                                                         ] as React.ReactNode)
-                                                      : null}
+                                                        : null}
                                             </td>
                                         ))}
                                     </tr>
@@ -313,11 +313,10 @@ function DynamicTable<T extends { id: string | number }>({
                                         onClick={() =>
                                             handlePageChange(pageNum)
                                         }
-                                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${
-                                            currentPage === pageNum
-                                                ? 'bg-emerald-50 text-emerald-600'
-                                                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
-                                        }`}
+                                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${currentPage === pageNum
+                                            ? 'bg-emerald-50 text-emerald-600'
+                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                            }`}
                                     >
                                         {pageNum}
                                     </button>

@@ -1,70 +1,28 @@
 import AppLayout from '@/layouts/app-layout'
-import { Head } from '@inertiajs/react'
-// import { dashboard } from '@/routes'
+import { Head, usePage } from '@inertiajs/react'
 import { type BreadcrumbItem } from '@/types'
-
-import { Users, AlertTriangle, Clock } from 'lucide-react'
-import StatCard from '@/components/stat-card'
-import TodayAttendance from '@/components/attendace'
-import WeeklyChart from '@/components/weekly-chart'
-import MiniCalendar from '@/components/mini-calendar'
-import WorkClock from '@/components/clock'
+import AdminDashboard from '@/components/dashboard/admin'
+import UserDashboard from '@/components/dashboard/user'
 
 const breadcrumbs: BreadcrumbItem[] = [
     { title: 'App', href: '/app' },
 ]
 
 export default function Dashboard(props: any) {
-    const stats = props.stats ?? {
-        hadirBulanIni: 0,
-        pelanggaranBulanIni: 0,
-        pendingTotal: 0,
-    }
 
-    const today = props.today ?? { hadir: 0, total: 0 }
-    const weeklyData = props.weeklyData ?? []
-    const kalender = props.kalender ?? []
+    const { auth }: any = usePage().props
+    const role = auth?.user?.role ?? 'user'
 
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Dashboard" />
 
-            <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
+            {
+                role === 'admin'
+                    ? <AdminDashboard {...props} />
+                    : <UserDashboard {...props} />
+            }
 
-                {/* ================= STATS ================= */}
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 items-stretch">
-                    <StatCard
-                        title="Kehadiran Bulan Ini"
-                        value={stats.hadirBulanIni}
-                        icon={<Users className="w-5 h-5 text-emerald-600" />}
-                    />
-
-                    <StatCard
-                        title="Pelanggaran Bulan Ini"
-                        value={stats.pelanggaranBulanIni}
-                        icon={<AlertTriangle className="w-5 h-5 text-red-600" />}
-                    />
-
-                    <StatCard
-                        title="Pengajuan Pending"
-                        value={stats.pendingTotal}
-                        icon={<Clock className="w-5 h-5 text-amber-600" />}
-                    />
-                </div>
-
-
-                <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                    <div className="lg:col-span-2 space-y-8">
-                        <TodayAttendance data={today} />
-                        <WeeklyChart data={weeklyData} />
-                    </div>
-
-                    <div className="flex flex-col gap-8">
-                        <MiniCalendar events={kalender} />
-                    </div>
-                </div>
-            </div>
         </AppLayout>
     )
 }

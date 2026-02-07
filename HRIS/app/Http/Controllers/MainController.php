@@ -16,61 +16,78 @@ class MainController extends Controller
 {
     public function index()
     {
+        $user = auth()->user();
         $today = Carbon::today();
         $startMonth = now()->startOfMonth();
 
-        $totalKaryawan = Karyawan::count();
+        if ($user->role === 'admin') {
 
-        $hadirBulanIni = Absensi::where('status', 'hadir')
-            ->whereBetween('tanggal', [$startMonth, now()])
-            ->count();
+            $totalKaryawan = Karyawan::count();
+            $hadirBulanIni = Absensi::where('status', 'hadir')->whereBetween('tanggal', [$startMonth, now()])->count();
+            $pelanggaranBulanIni = Pelanggaran::whereBetween('tanggal', [$startMonth, now()])->count();
+            $pendingCuti = Cuti::where('status', 'pending')->count();
+            $pendingLembur = Lembur::where('status', 'pending')->count();
+            $hadirHariIni = Absensi::whereDate('tanggal', $today)->where('status', 'hadir')->count();
+            $weekly = collect(range(0, 6))->map(function ($i) {
+                $date = now()->subDays(6 - $i);
 
-        $pelanggaranBulanIni = Pelanggaran::whereBetween('tanggal', [$startMonth, now()])
-            ->count();
+                return [
+                    'day' => $date->translatedFormat('D'),
+                    'hadir' => Absensi::whereDate('tanggal', $date)->where('status', 'hadir')->count(),
+                ];
+            });
 
-        $pendingCuti = Cuti::where('status', 'pending')->count();
-        $pendingLembur = Lembur::where('status', 'pending')->count();
+            $kalender = Kalender::select('tanggal', 'jenis_hari', 'keterangan')->get();
 
-        $hadirHariIni = Absensi::whereDate('tanggal', $today)
-            ->where('status', 'hadir')
-            ->count();
+            return Inertia::render('dashboard', [
+                'role' => 'admin',
+                'stats' => [
+                    'hadirBulanIni' => $hadirBulanIni,
+                    'pelanggaranBulanIni' => $pelanggaranBulanIni,
+                    'pendingTotal' => $pendingCuti + $pendingLembur,
+                ],
+                'today' => [
+                    'hadir' => $hadirHariIni,
+                    'total' => $totalKaryawan,
+                ],
+                'weeklyData' => $weekly,
+                'kalender' => $kalender,
+            ]);
+        }
 
-        $weekly = collect(range(0, 6))->map(function ($i) {
-            $date = now()->subDays(6 - $i);
+        $karyawanId = Karyawan::where('user_id', $user->id)->value('id');
 
-            return [
-                'day' => $date->translatedFormat('D'),
-                'hadir' => Absensi::whereDate('tanggal', $date)
-                    ->where('status', 'hadir')
-                    ->count(),
-            ];
-        });
+        if (!$karyawanId) {
+            return Inertia::render('dashboard', [
+                'role' => 'user',
+                'userStats' => [
+                    'hadir' => 0,
+                    'hariKerja' => 0,
+                    'pelanggaran' => 0,
+                    'cuti' => 0,
+                    'alpha' => 0,
+                ],
+                'kalender' => [],
+            ]);
+        }
 
+        $totalHariKerja = now()->daysInMonth;
+        $hadir = Absensi::where('karyawan_id', $karyawanId)->whereMonth('tanggal', now()->month)->where('status', 'hadir')->count();
+        $pelanggaran = Pelanggaran::where('karyawan_id', $karyawanId)->whereMonth('tanggal', now()->month)->count();
+        $cuti = Cuti::where('karyawan_id', $karyawanId)->where('status', 'disetujui')->whereMonth('tanggal_mulai', now()->month)->count();
+        $izin = Absensi::where('karyawan_id', $karyawanId)->where('status', 'izin')->count();
+        $alpha = Absensi::where('karyawan_id', $karyawanId)->where('status', 'alpha')->count();
         $kalender = Kalender::select('tanggal', 'jenis_hari', 'keterangan')->get();
-        // dd([
-        //     'stats' => [
-        //         'hadirBulanIni' => $hadirBulanIni,
-        //         'pelanggaranBulanIni' => $pelanggaranBulanIni,
-        //         'pendingTotal' => $pendingCuti + $pendingLembur,
-        //     ],
-        //     'today' => [
-        //         'hadir' => $hadirHariIni,
-        //         'total' => $totalKaryawan,
-        //     ],
-        //     'weeklyData' => $weekly,
-        //     'kalender' => $kalender,
-        // ]);
+
         return Inertia::render('dashboard', [
-            'stats' => [
-                'hadirBulanIni' => $hadirBulanIni,
-                'pelanggaranBulanIni' => $pelanggaranBulanIni,
-                'pendingTotal' => $pendingCuti + $pendingLembur,
+            'role' => 'user',
+            'userStats' => [
+                'hadir' => $hadir,
+                'hariKerja' => $totalHariKerja,
+                'pelanggaran' => $pelanggaran,
+                'cuti' => $cuti + $izin,
+                'alpha' => $alpha,
             ],
-            'today' => [
-                'hadir' => $hadirHariIni,
-                'total' => $totalKaryawan,
-            ],
-            'weeklyData' => $weekly,
             'kalender' => $kalender,
         ]);
     }

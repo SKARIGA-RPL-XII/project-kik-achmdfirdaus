@@ -171,7 +171,7 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                         <select
                             value={filterBulan}
                             onChange={(e) => setFilterBulan(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm"
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                         >
                             <option value="">Semua Bulan</option>
                             {bulanList.map((b, i) => (
@@ -182,7 +182,7 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                         <select
                             value={filterTahun}
                             onChange={(e) => setFilterTahun(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm"
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
                         >
                             <option value="">Semua Tahun</option>
                             {[2024, 2025, 2026].map(t => (

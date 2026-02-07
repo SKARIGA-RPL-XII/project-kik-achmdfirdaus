@@ -18,8 +18,6 @@ export default function TodayAttendance({ data }: any) {
                         Karyawan Hadir Hari Ini
                     </p>
                 </div>
-
-                <WorkClock compact />
             </div>
 
         </div>

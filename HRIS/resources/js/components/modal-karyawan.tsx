@@ -56,7 +56,6 @@ export default function ModalKaryawanForm({
 
             <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
 
-                {/* ================= HEADER ================= */}
                 <div className="mb-6 flex items-center justify-between border-b pb-3">
                     <h2 className="text-lg font-semibold">
                         {isEdit ? 'Edit Karyawan' : 'Tambah Karyawan'}
@@ -70,11 +69,8 @@ export default function ModalKaryawanForm({
                     </button>
                 </div>
 
-
-                {/* ================= FORM ================= */}
                 <form onSubmit={submit} className="space-y-5">
 
-                    {/* NAMA */}
                     <div className="space-y-1">
                         <label className="text-sm font-medium">Nama</label>
                         <input
@@ -85,8 +81,6 @@ export default function ModalKaryawanForm({
                         />
                     </div>
 
-
-                    {/* EMAIL */}
                     <div className="space-y-1">
                         <label className="text-sm font-medium">Email</label>
                         <input
@@ -98,8 +92,6 @@ export default function ModalKaryawanForm({
                         />
                     </div>
 
-
-                    {/* PERSONAL INFO */}
                     <div className="grid grid-cols-2 gap-4">
 
                         <div className="space-y-1">
@@ -128,8 +120,6 @@ export default function ModalKaryawanForm({
 
                     </div>
 
-
-                    {/* RELATION INFO */}
                     <div className="grid grid-cols-2 gap-4">
 
                         <div className="space-y-1">
@@ -166,8 +156,6 @@ export default function ModalKaryawanForm({
 
                     </div>
 
-
-                    {/* BUTTON */}
                     <div className="flex justify-end gap-3 pt-4 border-t">
                         <Button type="button" variant="secondary" onClick={onClose}>
                             Batal
