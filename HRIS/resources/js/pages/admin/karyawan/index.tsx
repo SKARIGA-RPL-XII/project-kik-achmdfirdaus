@@ -15,7 +15,7 @@ type KaryawanData = {
     nama: string
     nip: string
     jk: string
-    tanggal_lahir: string
+    email: string
     divisi: string
     jabatan: string
     divisi_id: number
@@ -95,8 +95,8 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
             render: (item) => item.jk === 'L' ? 'Laki-laki' : 'Perempuan',
         },
         {
-            header: 'Tanggal Lahir',
-            render: (item) => formatDate(item.tanggal_lahir),
+            header: 'Email',
+            accessorKey: 'email',
         },
         {
             header: 'Divisi',

@@ -15,7 +15,6 @@ export type CutiData = {
     tanggal_selesai: string;
     karyawan_departemen: string;
     jumlah_hari: number;
-    jenis_cuti: string;
     alasan: string;
     status: 'pending' | 'disetujui' | 'ditolak';
 };
@@ -173,7 +172,6 @@ export default function CutiKaryawan({ cutiData }: PageProps) {
                         searchKeys={[
                             'karyawan_nama',
                             'karyawan_nip',
-                            'jenis_cuti'
                         ]}
                     />
                 </div>

@@ -51,6 +51,6 @@ class User extends Authenticatable
     }
     public function karyawan()
     {
-        return $this->belongsTo(Karyawan::class);
+        return $this->hasOne(Karyawan::class);
     }
 }

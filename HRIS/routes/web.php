@@ -64,7 +64,14 @@ Route::middleware(['auth'])->group(function () {
         Route::post('/app/gaji/generate', [AdminController::class, 'generate']);
     });
     Route::middleware(['role:user'])->group(function () {
-        Route::get('/absensi', [UserController::class, 'absensi'])->name('app.gaji');
+        Route::get('/app/my-absensi', [UserController::class, 'absensi'])->name('absensi.riwayat');
+        Route::post('/app/my-absensi', [UserController::class, 'absensi'])->name('absensi.riwayat');
+        Route::get('/app/my-cuti', [UserController::class, 'cuti'])->name('cuti');
+        Route::post('/app/my-cuti', [UserController::class, 'cutiStore'])->name('cuti.store');
+        Route::get('/app/my-lembur', [UserController::class, 'lembur']);
+        Route::post('/app/my-lembur', [UserController::class, 'lemburStore']);
+        Route::get('/app/my-pelanggaran', [UserController::class, 'pelanggaran']);
+        Route::get('/app/my-gaji', [UserController::class, 'gaji']);
     });
 });
 

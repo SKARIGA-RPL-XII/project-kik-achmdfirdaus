@@ -1,126 +1,133 @@
-import { router, usePage } from '@inertiajs/react'
-import AppLayout from '@/layouts/app-layout'
 import { Head } from '@inertiajs/react'
-import { useEffect, useState } from 'react'
-import { Button } from '@/components/ui/button'
-import { Clock } from 'lucide-react'
+import AppLayout from '@/layouts/app-layout'
+import React, { useMemo, useState } from 'react'
+import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
 
-export default function AbsensiUser({ absen }: any) {
+export type AbsensiData = {
+    id: number
+    tanggal: string
+    jam_masuk: string
+    jam_pulang: string
+    status: string
+    keterangan: string | null
+}
+
+interface PageProps {
+    absensiData: AbsensiData[]
+}
+
+export default function MyAbsensi({ absensiData }: PageProps) {
     const breadcrumbs: BreadcrumbItem[] = [
-        {
-            title: 'App',
-            href: '/app',
-        },
-        {
-            title: 'Absensi',
-            href: '/app/absensi',
-        },
+        { title: 'App', href: '/app' },
+        { title: 'Absensi Saya', href: '/app/my-absensi' },
     ]
 
-    const { flash }: any = usePage().props
+    const [from, setFrom] = useState('')
+    const [to, setTo] = useState('')
+    const [statusFilter, setStatusFilter] = useState('')
 
-    const [time, setTime] = useState('')
+    const formatDate = (d: string) =>
+        new Date(d).toLocaleDateString('id-ID', {
+            weekday: 'long',
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric',
+        })
+    const formatTime = (t?: string | null) =>
+        t ? `${t} WIB` : '-'
 
-    useEffect(() => {
-        const updateClock = () => {
-            const now = new Date().toLocaleTimeString('id-ID', {
-                hour12: false,
-                timeZone: 'Asia/Jakarta',
-            })
-            setTime(now)
+    const filteredData = useMemo(() => {
+        let data = [...absensiData]
+
+        if (statusFilter) {
+            data = data.filter((i) => i.status === statusFilter)
         }
 
-        updateClock()
-        const i = setInterval(updateClock, 1000)
-        return () => clearInterval(i)
-    }, [])
+        if (from) {
+            data = data.filter(
+                (i) => new Date(i.tanggal) >= new Date(from)
+            )
+        }
+
+        if (to) {
+            data = data.filter(
+                (i) => new Date(i.tanggal) <= new Date(to)
+            )
+        }
+
+        return data
+    }, [absensiData, statusFilter, from, to])
 
 
-    const sudahMasuk = !!absen?.jam_masuk
-    const sudahPulang = !!absen?.jam_pulang
-
-
-    function checkin() {
-        router.post('/app/absensi/checkin')
-    }
-
-    function checkout() {
-        router.post('/app/absensi/checkout')
-    }
-
+    const columns: ColumnDef<AbsensiData>[] = [
+        {
+            header: 'No',
+            render: (_, index) => index + 1,
+        },
+        {
+            header: 'Tanggal',
+            render: (item) => formatDate(item.tanggal),
+        },
+        {
+            header: 'Jam Masuk',
+            render: (item) => formatTime(item.jam_masuk) || '-',
+        },
+        {
+            header: 'Jam Pulang',
+            render: (item) => formatTime(item.jam_pulang) || '-',
+        },
+        {
+            header: 'Status',
+            accessorKey: 'status',
+        },
+        {
+            header: 'Keterangan',
+            accessorKey: 'keterangan',
+        },
+    ]
+    console.log(absensiData);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
+            <Head title="Absensi Saya" />
 
-            <Head title="Absensi" />
+            <div className="p-6 max-w-7xl mx-auto space-y-6">
 
-            <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
+                <div className="flex flex-wrap gap-3">
 
-                <div className="w-full max-w-md bg-white rounded-2xl shadow p-8 text-center space-y-6">
+                    <select
+                        value={statusFilter}
+                        onChange={(e) => setStatusFilter(e.target.value)}
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
+                    >
+                        <option value="">Semua Status</option>
+                        <option value="hadir">Hadir</option>
+                        <option value="izin">Izin</option>
+                        <option value="cuti">Cuti</option>
+                        <option value="alpha">Alpha</option>
+                    </select>
+                    <input
+                        type="date"
+                        value={from}
+                        onChange={(e) => setFrom(e.target.value)}
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
+                    />
+                    <input
+                        type="date"
+                        value={to}
+                        onChange={(e) => setTo(e.target.value)}
+                        className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
+                    />
+                </div>
 
-                    <Clock className="mx-auto text-red-600" size={40} />
-
-                    <h2 className="text-4xl font-bold tracking-widest">
-                        {time}
-                    </h2>
-
-                    <p className="text-gray-500 text-sm">
-                        {new Date().toLocaleDateString('id-ID')}
-                    </p>
-
-
-                    {/* STATUS */}
-                    <div className="space-y-1 text-sm">
-                        <p>
-                            Masuk :
-                            <span className="font-semibold ml-2">
-                                {absen?.jam_masuk ?? '-'}
-                            </span>
-                        </p>
-
-                        <p>
-                            Pulang :
-                            <span className="font-semibold ml-2">
-                                {absen?.jam_pulang ?? '-'}
-                            </span>
-                        </p>
-                    </div>
-
-
-                    {/* BUTTON */}
-                    <div className="flex gap-3 pt-4">
-
-                        <Button
-                            className="flex-1"
-                            disabled={sudahMasuk}
-                            onClick={checkin}
-                        >
-                            Absen Masuk
-                        </Button>
-
-                        <Button
-                            variant="secondary"
-                            className="flex-1"
-                            disabled={!sudahMasuk || sudahPulang}
-                            onClick={checkout}
-                        >
-                            Absen Pulang
-                        </Button>
-
-                    </div>
-
-
-                    {flash?.success && (
-                        <p className="text-green-600 text-sm">{flash.success}</p>
-                    )}
-
-                    {flash?.error && (
-                        <p className="text-red-600 text-sm">{flash.error}</p>
-                    )}
-
+                <div className="bg-white rounded-xl shadow-sm border overflow-hidden">
+                    <DynamicTable
+                        title="Riwayat Absensi Saya"
+                        data={filteredData}
+                        columns={columns}
+                    />
                 </div>
             </div>
-
         </AppLayout>
     )
 }

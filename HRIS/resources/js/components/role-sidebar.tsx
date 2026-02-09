@@ -66,11 +66,11 @@ export default function RoleSidebar() {
 
     const userMenus = [
         { title: 'Dashboard', href: '/app', icon: LayoutGrid },
-        { title: 'Absensi Saya', href: '/absensi', icon: CalendarCheck },
-        { title: 'Cuti Saya', href: '/cuti', icon: Plane },
-        { title: 'Lembur Saya', href: '/lembur', icon: Clock },
-        { title: 'Pelanggaran Saya', href: '/pelanggaran', icon: AlertTriangle },
-        { title: 'Gaji Saya', href: '/gaji', icon: Wallet },
+        { title: 'Absensi Saya', href: '/app/my-absensi', icon: CalendarCheck },
+        { title: 'Cuti Saya', href: '/app/my-cuti', icon: Plane },
+        { title: 'Lembur Saya', href: '/app/my-lembur', icon: Clock },
+        { title: 'Pelanggaran Saya', href: '/app/my-pelanggaran', icon: AlertTriangle },
+        { title: 'Gaji Saya', href: '/app/my-gaji', icon: Wallet },
     ]
 
     const menus = role === 'admin' ? adminMenus : userMenus

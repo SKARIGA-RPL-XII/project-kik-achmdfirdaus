@@ -52,6 +52,10 @@ class Karyawan extends Model
     {
         return $this->hasMany(Cuti::class);
     }
+    public function cutiUser()
+    {
+        return $this->hasMany(Cuti::class, "karyawan_id");
+    }
 
     public function absensi()
     {

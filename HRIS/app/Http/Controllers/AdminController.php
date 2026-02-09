@@ -13,6 +13,7 @@ use App\Models\Lembur;
 use App\Models\Pelanggaran;
 use App\Models\User;
 use App\Services\PayrollService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
@@ -331,13 +332,14 @@ class AdminController extends Controller
         try {
             $karyawan = Karyawan::with('user')->findOrFail($id);
 
-            $password = str_replace('-', '', $karyawan->tanggal_lahir);
+            $password = Carbon::parse($karyawan->tanggal_lahir)
+                ->format('dmY');
 
             $karyawan->user->update([
                 'password' => Hash::make($password)
             ]);
 
-            return back()->with('success', 'Password berhasil direset (tanggal lahir).');
+            return back()->with('success', 'Password berhasil direset (format DDMMYYYY).');
         } catch (\Exception $e) {
             return back()->with('error', $e->getMessage());
         }
@@ -447,11 +449,13 @@ class AdminController extends Controller
             'cutiData' => $cutiData,
         ]);
     }
-    public function cutiUpdate(Request $request, Cuti $cuti)
+    public function cutiUpdate(Request $request, $id)
     {
         $validated = $request->validate([
-            'action' => ['required', 'in:approve,reject'],
+            'action' => 'required|in:approve,reject',
         ]);
+
+        $cuti = Cuti::findOrFail($id);
 
         $statusMap = [
             'approve' => 'disetujui',
@@ -578,7 +582,6 @@ class AdminController extends Controller
 
         return back()->with('success', 'Pelanggaran berhasil dihapus');
     }
-
     public function gaji()
     {
         $gajiData = Gaji::with([

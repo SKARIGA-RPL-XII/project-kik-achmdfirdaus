@@ -13,15 +13,12 @@ class Cuti extends Model
 
     protected $fillable = [
         'karyawan_id',
-        'jenis_pengajuan',
         'tanggal_mulai',
         'tanggal_selesai',
+        'jumlah_hari',
+        'jenis_cuti',
         'alasan',
-        'status',
-    ];
-    protected $casts = [
-        'tanggal_mulai' => 'date',
-        'tanggal_selesai' => 'date',
+        'status'
     ];
 
     public function karyawan()
