@@ -20,6 +20,10 @@ class Cuti extends Model
         'alasan',
         'status'
     ];
+    protected $casts = [
+        'tanggal_mulai' => 'date',
+        'tanggal_selesai' => 'date',
+    ];
 
     public function karyawan()
     {

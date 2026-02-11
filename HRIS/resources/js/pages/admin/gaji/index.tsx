@@ -137,16 +137,6 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                 <div className="flex gap-2 justify-center">
                     <Button
                         size="sm"
-                        onClick={() => {
-                            setEditData(i)
-                            setModalOpen(true)
-                        }}
-                    >
-                        Edit
-                    </Button>
-
-                    <Button
-                        size="sm"
                         variant="destructive"
                         onClick={() => openDelete(i.id)}
                     >
@@ -205,20 +195,6 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                     />
                 </div>
             </div>
-
-            <ModalForm
-                open={modalOpen}
-                title={editData ? 'Edit Gaji' : 'Tambah Gaji'}
-                fields={fields}
-                submitUrl={
-                    editData
-                        ? `/app/gaji/${editData.id}`
-                        : '/app/gaji'
-                }
-                method={editData ? 'put' : 'post'}
-                initialData={editData ?? {}}
-                onClose={() => setModalOpen(false)}
-            />
 
             <ModalDelete
                 open={deleteOpen}

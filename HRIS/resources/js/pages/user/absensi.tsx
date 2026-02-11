@@ -86,7 +86,7 @@ export default function MyAbsensi({ absensiData }: PageProps) {
             accessorKey: 'keterangan',
         },
     ]
-    console.log(absensiData);
+    // console.log(absensiData);
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Absensi Saya" />
