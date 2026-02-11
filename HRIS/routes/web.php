@@ -68,7 +68,8 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware(['role:user'])->group(function () {
         Route::get('/app/my-absensi', [UserController::class, 'absensi'])->name('absensi.riwayat');
-        Route::post('/app/my-absensi', [UserController::class, 'absensiStore'])->name('absensi.store');
+        Route::post('/app/my-absensi/masuk', [UserController::class, 'absensiIn'])->name('absensi.in');
+        Route::post('/app/my-absensi/keluar', [UserController::class, 'absensiOut'])->name('absensi.out');
         Route::get('/app/my-cuti', [UserController::class, 'cuti'])->name('cuti');
         Route::post('/app/my-cuti', [UserController::class, 'cutiStore'])->name('cuti.store');
         Route::get('/app/my-lembur', [UserController::class, 'lembur']);
