@@ -1,8 +1,9 @@
-import { Head } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import React from 'react'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
+import Alert from '@/components/alert'
 
 export type GajiData = {
     id: number
@@ -24,7 +25,7 @@ export default function MyGaji({ gajiData }: PageProps) {
         { title: 'App', href: '/app' },
         { title: 'Gaji Saya', href: '/app/my-gaji' },
     ]
-
+    const { flash } = usePage().props as any
     const rupiah = (n: number) =>
         new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -76,6 +77,8 @@ export default function MyGaji({ gajiData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Gaji Saya" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6">
 

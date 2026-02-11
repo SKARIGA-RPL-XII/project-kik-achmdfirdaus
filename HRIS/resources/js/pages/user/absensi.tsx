@@ -1,8 +1,9 @@
-import { Head } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import React, { useMemo, useState } from 'react'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
+import Alert from '@/components/alert'
 
 export type AbsensiData = {
     id: number
@@ -22,7 +23,7 @@ export default function MyAbsensi({ absensiData }: PageProps) {
         { title: 'App', href: '/app' },
         { title: 'Absensi Saya', href: '/app/my-absensi' },
     ]
-
+    const { flash } = usePage().props as any
     const [from, setFrom] = useState('')
     const [to, setTo] = useState('')
     const [statusFilter, setStatusFilter] = useState('')
@@ -90,6 +91,8 @@ export default function MyAbsensi({ absensiData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Absensi Saya" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6 max-w-7xl mx-auto space-y-6">
 

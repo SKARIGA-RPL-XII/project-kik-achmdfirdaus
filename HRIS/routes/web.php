@@ -8,11 +8,14 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Fortify\Features;
 
-Route::get('/', function () {
-    return Inertia::render('welcome', [
-        'canRegister' => Features::enabled(Features::registration()),
-    ]);
-})->name('home');
+// Route::get('/', function () {
+//     return Inertia::render('welcome', [
+//         'canRegister' => Features::enabled(Features::registration()),
+//     ]);
+// })->name('home');
+Route::fallback(function () {
+    return redirect('/app');
+});
 
 Route::post('/login', [AuthController::class, 'store'])->name('login.store');
 Route::post('/logout', [AuthController::class, 'destroy'])->name('logout');
@@ -65,7 +68,7 @@ Route::middleware(['auth'])->group(function () {
     });
     Route::middleware(['role:user'])->group(function () {
         Route::get('/app/my-absensi', [UserController::class, 'absensi'])->name('absensi.riwayat');
-        Route::post('/app/my-absensi', [UserController::class, 'absensi'])->name('absensi.riwayat');
+        Route::post('/app/my-absensi', [UserController::class, 'absensiStore'])->name('absensi.store');
         Route::get('/app/my-cuti', [UserController::class, 'cuti'])->name('cuti');
         Route::post('/app/my-cuti', [UserController::class, 'cutiStore'])->name('cuti.store');
         Route::get('/app/my-lembur', [UserController::class, 'lembur']);

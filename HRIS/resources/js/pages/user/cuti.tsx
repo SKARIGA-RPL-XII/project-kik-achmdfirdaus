@@ -1,9 +1,10 @@
-import { Head, useForm } from '@inertiajs/react'
+import { Head, useForm, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import React, { useMemo, useState } from 'react'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
 import FormModal from '@/components/modal-pengajuan'
+import Alert from '@/components/alert'
 
 export type CutiData = {
     id: number
@@ -26,7 +27,7 @@ export default function MyCuti({ cutiData }: PageProps) {
 
     const [open, setOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState('')
-
+    const { flash } = usePage().props as any
     const { data, setData, post, processing, reset } = useForm({
         tanggal_mulai: '',
         tanggal_selesai: '',
@@ -83,6 +84,8 @@ export default function MyCuti({ cutiData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Cuti Saya" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6 space-y-6">
 

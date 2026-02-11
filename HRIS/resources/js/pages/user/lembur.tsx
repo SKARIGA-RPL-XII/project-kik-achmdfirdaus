@@ -1,9 +1,10 @@
-import { Head, useForm } from '@inertiajs/react'
+import { Head, useForm, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import React, { useMemo, useState } from 'react'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import FormModal from '@/components/modal-pengajuan'
 import { BreadcrumbItem } from '@/types'
+import Alert from '@/components/alert'
 
 export type LemburData = {
     id: number
@@ -21,7 +22,7 @@ export default function MyLembur({ lemburData }: PageProps) {
         { title: 'App', href: '/app' },
         { title: 'Lembur Saya', href: '/app/my-lembur' },
     ]
-
+    const { flash } = usePage().props as any
     const [open, setOpen] = useState(false)
     const [statusFilter, setStatusFilter] = useState('')
 
@@ -81,6 +82,8 @@ export default function MyLembur({ lemburData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Lembur Saya" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6 space-y-6">
 

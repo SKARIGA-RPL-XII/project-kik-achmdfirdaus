@@ -1,10 +1,11 @@
-import { Head, router } from '@inertiajs/react';
+import { Head, router, usePage } from '@inertiajs/react';
 import AppLayout from '@/layouts/app-layout';
 import { Check, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table';
 import { BreadcrumbItem } from '@/types';
+import Alert from '@/components/alert';
 
 export type CutiData = {
     id: number;
@@ -38,6 +39,7 @@ export default function CutiKaryawan({ cutiData }: PageProps) {
             year: 'numeric',
         });
     const [statusFilter, setStatusFilter] = useState('all');
+    const { flash } = usePage().props as any
 
     const handleAction = (id: number, action: 'approve' | 'reject') => {
         const message = action === 'approve' ? 'menyetujui' : 'menolak';
@@ -152,6 +154,8 @@ export default function CutiKaryawan({ cutiData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Manajemen Cuti" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6 max-w-7xl mx-auto space-y-6">
                 <select

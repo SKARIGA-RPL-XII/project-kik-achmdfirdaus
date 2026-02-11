@@ -20,7 +20,7 @@ class RoleMiddleware
             return redirect()->back();
         }
         if (!in_array($user->role, $roles)) {
-            abort(403, 'Unauthorized');
+            return redirect()->back();
         }
 
         return $next($request);

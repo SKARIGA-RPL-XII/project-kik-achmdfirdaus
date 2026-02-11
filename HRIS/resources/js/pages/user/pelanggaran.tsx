@@ -1,8 +1,9 @@
-import { Head } from '@inertiajs/react'
+import { Head, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import React from 'react'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
+import Alert from '@/components/alert'
 
 export type PelanggaranData = {
     id: number
@@ -22,7 +23,7 @@ export default function MyPelanggaran({ pelanggaranData }: PageProps) {
         { title: 'App', href: '/app' },
         { title: 'Pelanggaran Saya', href: '/app/my-pelanggaran' },
     ]
-
+    const { flash } = usePage().props as any
     const formatDate = (d: string) =>
         new Date(d + 'T00:00:00').toLocaleDateString('id-ID')
 
@@ -81,6 +82,8 @@ export default function MyPelanggaran({ pelanggaranData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Pelanggaran Saya" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6">
 

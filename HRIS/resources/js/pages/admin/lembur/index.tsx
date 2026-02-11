@@ -1,10 +1,11 @@
-import { Head, router } from '@inertiajs/react'
+import { Head, router, usePage } from '@inertiajs/react'
 import AppLayout from '@/layouts/app-layout'
 import { Check, X } from 'lucide-react'
 import React, { useMemo, useState } from 'react'
 
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { BreadcrumbItem } from '@/types'
+import Alert from '@/components/alert'
 
 export type LemburData = {
     id: number
@@ -29,7 +30,7 @@ export default function LemburIndex({ lemburData }: PageProps) {
             href: '/app/lembur',
         },
     ]
-
+    const { flash } = usePage().props as any
     const formatDate = (dateStr: string) =>
         new Date(dateStr).toLocaleDateString('id-ID', {
             day: '2-digit',
@@ -140,6 +141,8 @@ export default function LemburIndex({ lemburData }: PageProps) {
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Manajemen Lembur" />
+            {flash?.success && <Alert type="success" message={flash.success} />}
+            {flash?.error && <Alert type="error" message={flash.error} />}
 
             <div className="p-6 max-w-7xl mx-auto space-y-6">
 

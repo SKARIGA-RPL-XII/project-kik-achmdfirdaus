@@ -154,6 +154,7 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
             <div className="p-6 max-w-7xl mx-auto space-y-6">
 
                 {flash?.success && <Alert type="success" message={flash.success} />}
+                {flash?.error && <Alert type="error" message={flash.error} />}
 
                 <div className="flex items-center justify-between">
 
