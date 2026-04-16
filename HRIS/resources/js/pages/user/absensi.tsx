@@ -39,7 +39,7 @@ export default function MyAbsensi({ absensiData }: PageProps) {
         t ? `${t} WIB` : '-'
 
     const filteredData = useMemo(() => {
-        let data = [...absensiData]
+        let data = [...(absensiData || [])]
 
         if (statusFilter) {
             data = data.filter((i) => i.status === statusFilter)
@@ -87,7 +87,7 @@ export default function MyAbsensi({ absensiData }: PageProps) {
             accessorKey: 'keterangan',
         },
     ]
-    // console.log(absensiData);
+    
     return (
         <AppLayout breadcrumbs={breadcrumbs}>
             <Head title="Absensi Saya" />

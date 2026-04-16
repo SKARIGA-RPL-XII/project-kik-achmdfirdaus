@@ -6,6 +6,7 @@ type Props = {
     onDelete: () => void
     onReset: () => void
     onPelanggaran: () => void
+    exportSlipNode?: React.ReactNode
 }
 
 export default function ActionKaryawanMenu({
@@ -13,6 +14,7 @@ export default function ActionKaryawanMenu({
     onDelete,
     onReset,
     onPelanggaran,
+    exportSlipNode,
 }: Props) {
     const [open, setOpen] = useState(false)
     const ref = useRef<HTMLDivElement>(null)
@@ -36,14 +38,17 @@ export default function ActionKaryawanMenu({
             </button>
 
             {open && (
-                <div className="absolute right-0 mt-2 w-44 bg-white border rounded-lg shadow-lg z-50 text-sm">
-
+                <div className="absolute right-8 top-0 mt-2 w-48 bg-white border rounded-lg shadow-lg z-50 text-sm overflow-hidden flex flex-col">
                     <MenuItem icon={<Pencil size={14} />} label="Edit" onClick={onEdit} />
-
                     <MenuItem icon={<KeyRound size={14} />} label="Reset Password" onClick={onReset} />
-
                     <MenuItem icon={<AlertTriangle size={14} />} label="Pelanggaran" onClick={onPelanggaran} />
-
+                    
+                    {exportSlipNode && (
+                        <div className="border-t my-1"></div>
+                    )}
+                    {exportSlipNode}
+                    
+                    <div className="border-t my-1"></div>
                     <MenuItem
                         icon={<Trash2 size={14} />}
                         label="Hapus"
@@ -60,7 +65,7 @@ function MenuItem({ icon, label, onClick, danger = false }: any) {
     return (
         <button
             onClick={onClick}
-            className={`w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-gray-100 ${danger ? 'text-red-600' : ''
+            className={`w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-100 ${danger ? 'text-red-600' : 'text-gray-700'
                 }`}
         >
             {icon}

@@ -8,6 +8,8 @@ import Alert from '@/components/alert'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import { formatRupiah } from '@/lib/format'
 import { BreadcrumbItem } from '@/types'
+import { Pencil, Trash2 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type JabatanData = {
     id: number
@@ -40,7 +42,7 @@ export default function Index({ jabatan }: PageProps) {
 
     const jabatanFields = [
         { name: 'nama', label: 'Nama Jabatan', required: true },
-        { name: 'gaji', label: 'Gaji', type: 'rupiah', required: true },
+        { name: 'gaji', label: 'Gaji', type: 'rupiah' as const, required: true },
     ]
 
     function openDelete(id: number) {
@@ -104,26 +106,42 @@ export default function Index({ jabatan }: PageProps) {
         },
         {
             header: '',
-            className: 'text-center w-40',
+            className: 'text-center w-24',
             render: (item) => (
                 <div className="flex justify-center gap-2">
-                    <Button
-                        size="sm"
-                        onClick={() => {
-                            setEditData(item)
-                            setModalOpen(true)
-                        }}
-                    >
-                        Edit
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="sm"
+                                onClick={() => {
+                                    setEditData(item)
+                                    setModalOpen(true)
+                                }}
+                                className="w-8 h-8 p-0 flex items-center justify-center shadow-sm"
+                            >
+                                <Pencil size={14} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Edit Jabatan</p>
+                        </TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => openDelete(item.id)}
-                    >
-                        Hapus
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => openDelete(item.id)}
+                                className="w-8 h-8 p-0 flex items-center justify-center shadow-sm"
+                            >
+                                <Trash2 size={14} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Hapus Jabatan</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             ),
         },

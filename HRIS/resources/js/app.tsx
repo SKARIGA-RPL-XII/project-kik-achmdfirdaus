@@ -5,6 +5,7 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { StrictMode } from 'react';
 import { createRoot } from 'react-dom/client';
 import { initializeTheme } from './hooks/use-appearance';
+import PageLoader from './components/page-loader';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -20,12 +21,16 @@ createInertiaApp({
 
         root.render(
             <StrictMode>
+                <PageLoader />
                 <App {...props} />
             </StrictMode>,
         );
     },
     progress: {
-        color: '#4B5563',
+        delay: 250,
+        color: '#dc2626',
+        includeCSS: true,
+        showSpinner: true,
     },
 });
 

@@ -1,5 +1,7 @@
 import { router, useForm } from '@inertiajs/react'
 import { Button } from '@/components/ui/button'
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { UserPlus, UserCog } from 'lucide-react'
 
 type Props = {
     open: boolean
@@ -16,8 +18,6 @@ export default function ModalKaryawanForm({
     divisi = [],
     jabatan = [],
 }: Props) {
-
-    if (!open) return null
 
     const isEdit = Boolean(karyawan)
 
@@ -46,56 +46,48 @@ export default function ModalKaryawanForm({
     }
 
     const inputStyle =
-        'w-full rounded-lg border px-3 py-2 text-sm focus:ring-2 focus:ring-primary focus:outline-none'
+        'w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-3 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626]/50 focus:ring-2 focus:ring-[#dc2626]/10 hover:border-gray-300 shadow-sm outline-none'
 
     const readOnlyStyle =
-        'bg-gray-100 cursor-not-allowed'
+        'bg-gray-100/50 text-gray-500 cursor-not-allowed hover:border-gray-200 focus:ring-0 focus:border-gray-200'
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm">
-
-            <div className="w-full max-w-xl rounded-2xl bg-white p-6 shadow-xl">
-
-                <div className="mb-6 flex items-center justify-between border-b pb-3">
-                    <h2 className="text-lg font-semibold">
+        <Dialog open={open} onOpenChange={(val) => !val && onClose()}>
+            <DialogContent className="sm:max-w-[600px] p-6 overflow-hidden bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_0_40px_-5px_rgba(0,0,0,0.1)] border-gray-100">
+                <DialogHeader className="mb-4">
+                    <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600 flex items-center gap-2">
+                        {isEdit ? <UserCog className="text-[#dc2626]" size={22} /> : <UserPlus className="text-[#dc2626]" size={22} />}
                         {isEdit ? 'Edit Karyawan' : 'Tambah Karyawan'}
-                    </h2>
+                    </DialogTitle>
+                </DialogHeader>
 
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 hover:text-red-500 text-lg"
-                    >
-                        ✕
-                    </button>
-                </div>
+                <form onSubmit={submit} className="space-y-6">
 
-                <form onSubmit={submit} className="space-y-5">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5 px-1 max-h-[60vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
 
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium">Nama</label>
-                        <input
-                            value={data.nama}
-                            onChange={(e) => setData('nama', e.target.value)}
-                            className={inputStyle}
-                            placeholder="Nama lengkap"
-                        />
-                    </div>
+                        <div className="space-y-1.5 md:col-span-2 group">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Nama Lengkap</label>
+                            <input
+                                value={data.nama}
+                                onChange={(e) => setData('nama', e.target.value)}
+                                className={inputStyle}
+                                placeholder="Masukkan nama lengkap"
+                            />
+                        </div>
 
-                    <div className="space-y-1">
-                        <label className="text-sm font-medium">Email</label>
-                        <input
-                            type="email"
-                            value={data.email}
-                            onChange={(e) => setData('email', e.target.value)}
-                            className={inputStyle}
-                            placeholder="email@company.com"
-                        />
-                    </div>
+                        <div className="space-y-1.5 group">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Email</label>
+                            <input
+                                type="email"
+                                value={data.email}
+                                onChange={(e) => setData('email', e.target.value)}
+                                className={inputStyle}
+                                placeholder="email@company.com"
+                            />
+                        </div>
 
-                    <div className="grid grid-cols-2 gap-4">
-
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium">Tanggal Lahir</label>
+                        <div className="space-y-1.5 group">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Tanggal Lahir</label>
                             <input
                                 type="date"
                                 readOnly={isEdit}
@@ -105,25 +97,21 @@ export default function ModalKaryawanForm({
                             />
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium">Jenis Kelamin</label>
+                        <div className="space-y-1.5 group">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Jenis Kelamin</label>
                             <select
                                 value={data.jk}
                                 onChange={(e) => setData('jk', e.target.value)}
                                 className={inputStyle}
                             >
-                                <option value="">Pilih</option>
+                                <option value="">Pilih Jenis Kelamin</option>
                                 <option value="L">Laki-laki</option>
                                 <option value="P">Perempuan</option>
                             </select>
                         </div>
 
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4">
-
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium">Jabatan</label>
+                        <div className="space-y-1.5 group">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Jabatan</label>
                             <select
                                 value={data.jabatan_id}
                                 onChange={(e) => setData('jabatan_id', Number(e.target.value))}
@@ -138,8 +126,8 @@ export default function ModalKaryawanForm({
                             </select>
                         </div>
 
-                        <div className="space-y-1">
-                            <label className="text-sm font-medium">Divisi</label>
+                        <div className="space-y-1.5 group md:col-span-2">
+                            <label className="text-sm font-semibold text-gray-700 group-focus-within:text-[#dc2626] transition-colors">Divisi</label>
                             <select
                                 value={data.divisi_id}
                                 onChange={(e) => setData('divisi_id', Number(e.target.value))}
@@ -153,21 +141,29 @@ export default function ModalKaryawanForm({
                                 ))}
                             </select>
                         </div>
-
                     </div>
 
-                    <div className="flex justify-end gap-3 pt-4 border-t">
-                        <Button type="button" variant="secondary" onClick={onClose}>
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={onClose}
+                            className="rounded-xl border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                        >
                             Batal
                         </Button>
 
-                        <Button type="submit" disabled={processing}>
+                        <Button 
+                            type="submit" 
+                            disabled={processing}
+                            className="rounded-xl bg-[#dc2626] hover:bg-[#b91c1c] text-white shadow-md shadow-[#dc2626]/20 transition-all duration-300 active:scale-95 px-6"
+                        >
                             {processing ? 'Menyimpan...' : 'Simpan'}
                         </Button>
                     </div>
 
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     )
 }

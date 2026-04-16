@@ -10,6 +10,8 @@ import { BreadcrumbItem } from '@/types'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import ReportPdf from '@/components/report'
 import SlipPdf from '@/components/slip-report'
+import { FileDown, Trash2, Calculator } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type GajiData = {
     id: number
@@ -126,31 +128,52 @@ export default function Index({ gajiData }: PageProps) {
         },
         {
             header: 'Slip',
+            className: 'text-center w-16',
             render: (i) => (
-                <PDFDownloadLink
-                    document={
-                        <SlipPdf
-                            data={i}
-                            bulan={`${bulanList[i.bulan - 1]} ${i.tahun}`}
-                        />
-                    }
-                    fileName={`slip-${i.nip}.pdf`}
-                    className="text-blue-600 underline"
-                >
-                    {({ loading }) => loading ? '...' : 'Download'}
-                </PDFDownloadLink>
+                <div className="flex justify-center">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <PDFDownloadLink
+                                document={
+                                    <SlipPdf
+                                        data={i}
+                                        bulan={`${bulanList[i.bulan - 1]} ${i.tahun}`}
+                                    />
+                                }
+                                fileName={`slip-${i.nip}.pdf`}
+                                className="inline-flex items-center justify-center w-8 h-8 text-blue-700 bg-blue-50 border border-blue-200 rounded-md hover:bg-blue-100 transition-colors shadow-sm"
+                            >
+                                {({ loading }) => loading ? <span className="text-[10px]">...</span> : <FileDown size={14} />}
+                            </PDFDownloadLink>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Download Slip Gaji</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
             ),
         },
         {
             header: '',
+            className: 'text-center w-16',
             render: (i) => (
-                <Button
-                    size="sm"
-                    variant="destructive"
-                    onClick={() => openDelete(i.id)}
-                >
-                    Hapus
-                </Button>
+                <div className="flex justify-center">
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => openDelete(i.id)}
+                                className="w-8 h-8 p-0 flex items-center justify-center shadow-sm"
+                            >
+                                <Trash2 size={14} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Hapus Data Gaji</p>
+                        </TooltipContent>
+                    </Tooltip>
+                </div>
             ),
         },
     ]
@@ -170,7 +193,7 @@ export default function Index({ gajiData }: PageProps) {
                         <select
                             value={filterBulan}
                             onChange={(e) => setFilterBulan(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm"
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
                         >
                             <option value="">Semua Bulan</option>
                             {bulanList.map((b, i) => (
@@ -181,7 +204,7 @@ export default function Index({ gajiData }: PageProps) {
                         <select
                             value={filterTahun}
                             onChange={(e) => setFilterTahun(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm"
+                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500 outline-none"
                         >
                             <option value="">Semua Tahun</option>
                             {[2024, 2025, 2026].map(t => (
@@ -190,9 +213,12 @@ export default function Index({ gajiData }: PageProps) {
                         </select>
                     </div>
 
-                    <div className="flex gap-2">
-                        <Button onClick={() => router.post('/app/gaji/generate')}>
-                            Generate Payroll
+                    <div className="flex gap-3">
+                        <Button
+                            onClick={() => router.post('/app/gaji/generate')}
+                            className="flex items-center gap-2 shadow-sm"
+                        >
+                            <Calculator size={16} /> Generate Payroll
                         </Button>
 
                         <PDFDownloadLink
@@ -203,10 +229,14 @@ export default function Index({ gajiData }: PageProps) {
                                 />
                             }
                             fileName={`report-${periodeLabel}.pdf`}
-                            className="px-4 py-2 bg-red-600 text-white rounded"
+                            className="inline-flex items-center gap-2 px-4 py-2 bg-red-600 text-white text-sm font-semibold rounded-lg hover:bg-red-700 transition-colors shadow-sm"
                         >
                             {({ loading }) =>
-                                loading ? 'Generating PDF...' : 'Export Semua'
+                                loading ? 'Menyiapkan PDF...' : (
+                                    <>
+                                        <FileDown size={16} /> Export Semua
+                                    </>
+                                )
                             }
                         </PDFDownloadLink>
                     </div>

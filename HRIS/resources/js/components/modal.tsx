@@ -56,9 +56,7 @@ export default function ModalForm({
 
     useEffect(() => {
         if (open) {
-            Object.keys(initialData).forEach((key) => {
-                setData(key, initialData[key])
-            })
+            setData({ ...initialData })
         } else {
             reset()
             clearErrors()
@@ -116,100 +114,118 @@ export default function ModalForm({
                 if (!state) onClose()
             }}
         >
-            <DialogContent>
-                <DialogHeader>
-                    <DialogTitle>{title}</DialogTitle>
+            <DialogContent className="sm:max-w-[425px] p-6 overflow-hidden bg-white/95 backdrop-blur-md rounded-2xl shadow-[0_0_40px_-10px_rgba(0,0,0,0.1)] border-gray-100">
+                <DialogHeader className="mb-2">
+                    <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-gray-900 to-gray-600">
+                        {title}
+                    </DialogTitle>
                 </DialogHeader>
 
-                <form onSubmit={submit} className="space-y-4">
-                    {fields.map((field) => (
-                        <div key={field.name}>
-                            <label className="text-sm font-medium">
-                                {field.label}
-                            </label>
+                <form onSubmit={submit} className="space-y-5">
+                    <div className="max-h-[60vh] overflow-y-auto pr-2 space-y-4 -mr-2 scrollbar-thin scrollbar-thumb-gray-200">
+                        {fields.map((field) => (
+                            <div key={field.name} className="group flex flex-col gap-1">
+                                <label className="text-sm font-semibold text-gray-700 transition-colors group-focus-within:text-[#dc2626]">
+                                    {field.label} {field.required && <span className="text-red-500">*</span>}
+                                </label>
 
-                            {(!field.type ||
-                                field.type === 'text' ||
-                                field.type === 'number') && (
-                                    <input
-                                        type={field.type ?? 'text'}
+                                {(!field.type ||
+                                    field.type === 'text' ||
+                                    field.type === 'number') && (
+                                        <input
+                                            type={field.type ?? 'text'}
+                                            value={data[field.name] ?? ''}
+                                            placeholder={field.placeholder}
+                                            onChange={(e) =>
+                                                setData(field.name, e.target.value)
+                                            }
+                                            className="w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626]/50 focus:ring-2 focus:ring-[#dc2626]/10 hover:border-gray-300 shadow-sm"
+                                        />
+                                    )}
+
+                                {field.type === 'textarea' && (
+                                    <textarea
                                         value={data[field.name] ?? ''}
-                                        placeholder={field.placeholder}
                                         onChange={(e) =>
                                             setData(field.name, e.target.value)
                                         }
-                                        className="w-full rounded border px-3 py-2 text-sm"
+                                        className="w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626]/50 focus:ring-2 focus:ring-[#dc2626]/10 hover:border-gray-300 shadow-sm min-h-[100px] resize-y"
                                     />
                                 )}
 
-                            {field.type === 'textarea' && (
-                                <textarea
-                                    value={data[field.name] ?? ''}
-                                    onChange={(e) =>
-                                        setData(field.name, e.target.value)
-                                    }
-                                    className="w-full rounded border px-3 py-2 text-sm"
-                                />
-                            )}
-
-                            {field.type === 'select' && (
-                                <select
-                                    value={data[field.name] ?? ''}
-                                    onChange={(e) =>
-                                        setData(field.name, e.target.value)
-                                    }
-                                    className="w-full rounded border px-3 py-2 text-sm"
-                                >
-                                    <option value="">
-                                        Pilih {field.label}
-                                    </option>
-                                    {field.options?.map((opt) => (
-                                        <option
-                                            key={opt.value}
-                                            value={opt.value}
-                                        >
-                                            {opt.label}
+                                {field.type === 'select' && (
+                                    <select
+                                        value={data[field.name] ?? ''}
+                                        onChange={(e) =>
+                                            setData(field.name, e.target.value)
+                                        }
+                                        className="w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626]/50 focus:ring-2 focus:ring-[#dc2626]/10 hover:border-gray-300 shadow-sm appearance-none outline-none cursor-pointer"
+                                    >
+                                        <option value="" disabled className="text-gray-400">
+                                            Pilih {field.label}
                                         </option>
-                                    ))}
-                                </select>
-                            )}
-
-                            {field.type === 'rupiah' && (
-                                <input
-                                    type="text"
-                                    value={formatRupiah(data[field.name] ?? '')}
-                                    onChange={(e) =>
-                                        setData(
-                                            field.name,
-                                            parseRupiah(e.target.value)
-                                        )
-                                    }
-                                    placeholder="Rp 0"
-                                    className="w-full rounded border px-3 py-2 text-sm"
-                                />
-                            )}
-
-                            {(clientErrors[field.name] ||
-                                errors[field.name]) && (
-                                    <p className="text-sm text-red-500">
-                                        {clientErrors[field.name] ||
-                                            errors[field.name]}
-                                    </p>
+                                        {field.options?.map((opt) => (
+                                            <option
+                                                key={opt.value}
+                                                value={opt.value}
+                                                className="text-gray-900"
+                                            >
+                                                {opt.label}
+                                            </option>
+                                        ))}
+                                    </select>
                                 )}
-                        </div>
-                    ))}
 
-                    <div className="flex justify-end gap-2 pt-3">
+                                {field.type === 'rupiah' && (
+                                    <div className="relative">
+                                        <span className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-400 text-sm font-medium">Rp</span>
+                                        <input
+                                            type="text"
+                                            value={formatRupiah(data[field.name] ?? '')}
+                                            onChange={(e) =>
+                                                setData(
+                                                    field.name,
+                                                    parseRupiah(e.target.value)
+                                                )
+                                            }
+                                            placeholder="0"
+                                            className="w-full rounded-xl border-gray-200 bg-gray-50/50 pl-10 pr-4 py-2.5 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626]/50 focus:ring-2 focus:ring-[#dc2626]/10 hover:border-gray-300 shadow-sm"
+                                        />
+                                    </div>
+                                )}
+
+                                <div className={`overflow-hidden transition-all duration-300 ${(clientErrors[field.name] || errors[field.name]) ? 'h-5 mt-1' : 'h-0 mt-0'}`}>
+                                    <p className="text-xs text-red-500 font-medium">
+                                        {clientErrors[field.name] || errors[field.name]}
+                                    </p>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    <div className="flex justify-end gap-3 pt-4 mt-2 border-t border-gray-50">
                         <Button
                             type="button"
                             variant="outline"
                             onClick={onClose}
+                            className="rounded-xl border-gray-200 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                         >
                             Batal
                         </Button>
 
-                        <Button type="submit" disabled={processing}>
-                            Simpan
+                        <Button 
+                            type="submit" 
+                            disabled={processing}
+                            className="rounded-xl bg-[#dc2626] hover:bg-[#b91c1c] text-white shadow-md shadow-[#dc2626]/20 transition-all duration-300 active:scale-95"
+                        >
+                            {processing ? (
+                                <span className="flex items-center gap-2">
+                                    <span className="h-4 w-4 rounded-full border-2 border-white/20 border-t-white animate-spin" />
+                                    Menyimpan...
+                                </span>
+                            ) : (
+                                "Simpan"
+                            )}
                         </Button>
                     </div>
                 </form>

@@ -4,6 +4,7 @@ import { Check, X } from 'lucide-react';
 import React, { useMemo, useState } from 'react';
 
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table';
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip';
 import { BreadcrumbItem } from '@/types';
 import Alert from '@/components/alert';
 
@@ -128,20 +129,32 @@ export default function CutiKaryawan({ cutiData }: PageProps) {
             render: (item) =>
                 item.status === 'pending' ? (
                     <div className="flex justify-center items-center gap-2">
-                        <button
-                            onClick={() => handleAction(item.id, 'approve')}
-                            className="group flex items-center justify-center w-8 h-8 rounded-full bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 shadow-sm"
-                            title="Setujui Pengajuan"
-                        >
-                            <Check size={16} strokeWidth={2.5} />
-                        </button>
-                        <button
-                            onClick={() => handleAction(item.id, 'reject')}
-                            className="group flex items-center justify-center w-8 h-8 rounded-full bg-white text-red-600 border border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200 shadow-sm"
-                            title="Tolak Pengajuan"
-                        >
-                            <X size={16} strokeWidth={2.5} />
-                        </button>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => handleAction(item.id, 'approve')}
+                                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-white text-emerald-600 border border-emerald-200 hover:bg-emerald-600 hover:text-white hover:border-emerald-600 transition-all duration-200 shadow-sm"
+                                >
+                                    <Check size={16} strokeWidth={2.5} />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Setujui Pengajuan</p>
+                            </TooltipContent>
+                        </Tooltip>
+                        <Tooltip>
+                            <TooltipTrigger asChild>
+                                <button
+                                    onClick={() => handleAction(item.id, 'reject')}
+                                    className="group flex items-center justify-center w-8 h-8 rounded-full bg-white text-red-600 border border-red-200 hover:bg-red-600 hover:text-white hover:border-red-600 transition-all duration-200 shadow-sm"
+                                >
+                                    <X size={16} strokeWidth={2.5} />
+                                </button>
+                            </TooltipTrigger>
+                            <TooltipContent>
+                                <p>Tolak Pengajuan</p>
+                            </TooltipContent>
+                        </Tooltip>
                     </div>
                 ) : (
                     <div className="text-center">

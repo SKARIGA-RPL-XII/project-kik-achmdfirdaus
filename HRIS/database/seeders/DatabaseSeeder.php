@@ -118,12 +118,12 @@ class DatabaseSeeder extends Seeder
 
         /*
         |--------------------------------------------------------------------------
-        | ABSENSI (1 BULAN KEBELAKANG)
+        | ABSENSI (1 JANUARI - SEKARANG)
         |--------------------------------------------------------------------------
         */
 
-        $start = now()->subMonth()->startOfDay();
-        $end   = now()->subDay()->endOfDay(); // ⭐ sampai kemarin
+        $start = Carbon::create(now()->year, 1, 1)->startOfDay();
+        $end   = now()->endOfDay();
 
         $statuses = ['hadir', 'hadir', 'hadir', 'hadir', 'cuti', 'izin', 'alpha'];
 

@@ -17,7 +17,7 @@ import {
     LogOut,
 } from 'lucide-react'
 
-export default function RoleSidebar() {
+export default function RoleSidebar({ isMobile = false }: { isMobile?: boolean }) {
     const { props, url } = usePage() as any
 
     const user = props.auth?.user
@@ -77,7 +77,7 @@ export default function RoleSidebar() {
 
 
     return (
-        <aside className="w-64 h-screen shrink-0 flex flex-col bg-[#B50B08] text-white shadow-xl">
+        <aside className={`w-64 h-screen shrink-0 flex-col bg-[#B50B08] text-white shadow-xl ${isMobile ? 'flex' : 'hidden md:flex'}`}>
 
             {/* LOGO */}
             <div className="h-20 flex items-center justify-center border-b border-white/10 font-bold text-xl tracking-wide">

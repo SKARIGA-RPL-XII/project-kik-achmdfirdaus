@@ -33,9 +33,8 @@ export default function UserDashboard(props: any) {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
-            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
-
+        <div className="space-y-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <StatCard
                     title="Kehadiran"
                     value={`${stats.hadir} / ${stats.hariKerja}`}
@@ -59,16 +58,12 @@ export default function UserDashboard(props: any) {
                     value={stats.alpha}
                     icon={<CalendarX className="w-5 h-5 text-orange-600" />}
                 />
-
             </div>
-            <div className="grid lg:grid-cols-2 gap-6 items-stretch">
+            
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 items-stretch">
                 <AbsenCard absen={absen} />
                 <MiniCalendar events={kalender} />
-
             </div>
-
-
-
         </div>
     )
 }

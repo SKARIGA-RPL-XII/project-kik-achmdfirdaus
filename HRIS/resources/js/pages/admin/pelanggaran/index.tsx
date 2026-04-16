@@ -9,6 +9,8 @@ import { formatRupiah } from '@/lib/format'
 import Alert from '@/components/alert'
 import { BreadcrumbItem } from '@/types'
 import ModalPelanggaran from '@/components/modal-pelanggaran'
+import { Pencil, Trash2 } from 'lucide-react'
+import { Tooltip, TooltipContent, TooltipTrigger } from '@/components/ui/tooltip'
 
 type PelanggaranData = {
     id: number
@@ -104,25 +106,42 @@ export default function Index({ pelanggaranData }: PageProps) {
         },
         {
             header: '',
+            className: 'text-center w-24',
             render: (item) => (
                 <div className="flex gap-2 justify-center">
-                    <Button
-                        size="sm"
-                        onClick={() => {
-                            setSelectedPelanggaran(item)
-                            setPelanggaranOpen(true)
-                        }}
-                    >
-                        Edit
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="sm"
+                                onClick={() => {
+                                    setSelectedPelanggaran(item)
+                                    setPelanggaranOpen(true)
+                                }}
+                                className="w-8 h-8 p-0 flex items-center justify-center shadow-sm"
+                            >
+                                <Pencil size={14} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Edit Pelanggaran</p>
+                        </TooltipContent>
+                    </Tooltip>
 
-                    <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => openDelete(item.id)}
-                    >
-                        Hapus
-                    </Button>
+                    <Tooltip>
+                        <TooltipTrigger asChild>
+                            <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => openDelete(item.id)}
+                                className="w-8 h-8 p-0 flex items-center justify-center shadow-sm"
+                            >
+                                <Trash2 size={14} />
+                            </Button>
+                        </TooltipTrigger>
+                        <TooltipContent>
+                            <p>Hapus Pelanggaran</p>
+                        </TooltipContent>
+                    </Tooltip>
                 </div>
             ),
         },

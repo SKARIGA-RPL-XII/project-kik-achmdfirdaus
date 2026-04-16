@@ -18,8 +18,7 @@ export default function AdminDashboard(props: any) {
     const kalender = props.kalender ?? []
 
     return (
-        <div className="max-w-7xl mx-auto px-8 py-8 space-y-8">
-
+        <div className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <StatCard
                     title="Kehadiran Bulan Ini"
@@ -40,28 +39,18 @@ export default function AdminDashboard(props: any) {
                 />
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-
-                {/* ================= LEFT AREA ================= */}
-                <div className="lg:col-span-2 grid gap-8">
-
-                    {/* ROW 1 : Today + Clock */}
-                    <div className="grid md:grid-cols-2 gap-8">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <div className="lg:col-span-2 grid gap-6">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <TodayAttendance data={today} />
                         <WorkClock />
                     </div>
 
-                    {/* ROW 2 : Weekly full width */}
                     <WeeklyChart data={weeklyData} />
                 </div>
 
-
-                {/* ================= RIGHT AREA ================= */}
                 <MiniCalendar events={kalender} />
-
             </div>
-
-
         </div>
     )
 }

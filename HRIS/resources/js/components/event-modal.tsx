@@ -1,6 +1,8 @@
 import { useForm } from '@inertiajs/react';
-import { ChevronLeft, ChevronRight } from 'lucide-react';
+import { ChevronLeft, ChevronRight, CalendarDays } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { Dialog, DialogContent, DialogTitle, DialogHeader } from '@/components/ui/dialog';
+import { Button } from '@/components/ui/button';
 
 interface KalenderItem {
     id?: number;
@@ -55,9 +57,10 @@ export const EventModal = ({
                 jenis_hari: initialData.jenis_hari,
                 tanggal: initialData.tanggal,
             });
-            setViewDate(new Date(initialData.tanggal));
+            setViewDate(initialData.tanggal ? new Date(initialData.tanggal) : new Date());
         } else {
             reset();
+            setViewDate(new Date());
         }
 
         setClientErrors({});
@@ -113,120 +116,142 @@ export const EventModal = ({
             : post('/app/kalender', options);
     };
 
+    const inputClasses = "w-full rounded-xl border-gray-200 bg-gray-50/50 px-4 py-2.5 text-sm transition-all duration-300 focus:bg-white focus:border-[#dc2626] focus:ring-2 focus:ring-[#dc2626]/20 hover:border-gray-300 outline-none";
+
     return (
-        <div
-            onClick={(e) => e.target === e.currentTarget && handleClose()}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/50 backdrop-blur-sm"
-        >
-            <div className="bg-white w-full max-w-lg rounded p-6">
+        <Dialog open={isOpen} onOpenChange={handleClose}>
+            <DialogContent className="sm:max-w-md p-6 overflow-hidden bg-white/95 backdrop-blur-md rounded-2xl shadow-2xl border-gray-100">
+                <DialogHeader className="mb-4">
+                    <DialogTitle className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-[#dc2626] to-[#f87171] flex items-center gap-2">
+                        <CalendarDays className="text-[#dc2626]" size={20} />
+                        {isEdit ? 'Edit Agenda Kalender' : 'Tambah Agenda Kalender'}
+                    </DialogTitle>
+                </DialogHeader>
 
-                <h2 className="text-lg font-bold mb-4">
-                    {isEdit ? 'Edit Jadwal' : 'Tambah Jadwal'}
-                </h2>
+                <form onSubmit={handleSubmit} className="space-y-5">
 
-                <form onSubmit={handleSubmit} className="space-y-4">
-
-                    <div>
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Keterangan <span className="text-red-500">*</span></label>
                         <input
                             value={data.keterangan}
                             onChange={(e) => setData('keterangan', e.target.value)}
-                            placeholder="Keterangan"
-                            className="w-full border p-2 rounded"
+                            placeholder="Contoh: Rapat Paripurna"
+                            className={inputClasses}
                         />
-                        {(clientErrors.keterangan || errors.keterangan) && (
-                            <p className="text-red-500 text-sm">
+                        <div className={`overflow-hidden transition-all duration-300 ${(clientErrors.keterangan || errors.keterangan) ? 'h-5' : 'h-0'}`}>
+                            <p className="text-red-500 text-xs font-medium">
                                 {clientErrors.keterangan || errors.keterangan}
                             </p>
-                        )}
+                        </div>
                     </div>
 
-                    <div>
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Jenis Agenda <span className="text-red-500">*</span></label>
                         <select
                             value={data.jenis_hari}
-                            onChange={(e) => setData('jenis_hari', e.target.value)}
-                            className="w-full border p-2 rounded"
+                            onChange={(e) => setData('jenis_hari', e.target.value as any)}
+                            className={inputClasses}
                         >
                             <option value="">Pilih Jenis</option>
-                            <option value="event">Event</option>
-                            <option value="cuti">Cuti</option>
+                            <option value="event">Event / Acara</option>
+                            <option value="cuti">Cuti Bersama</option>
                         </select>
-                        {(clientErrors.jenis_hari || errors.jenis_hari) && (
-                            <p className="text-red-500 text-sm">
+                        <div className={`overflow-hidden transition-all duration-300 ${(clientErrors.jenis_hari || errors.jenis_hari) ? 'h-5' : 'h-0'}`}>
+                            <p className="text-red-500 text-xs font-medium">
                                 {clientErrors.jenis_hari || errors.jenis_hari}
                             </p>
-                        )}
+                        </div>
                     </div>
 
-                    <div className="border p-4 rounded">
+                    <div className="space-y-1.5">
+                        <label className="text-sm font-semibold text-gray-700">Pilih Tanggal <span className="text-red-500">*</span></label>
+                        <div className="border border-gray-200 bg-white p-4 rounded-xl shadow-sm">
 
-                        <div className="flex items-center justify-between mb-3">
-                            <button
-                                type="button"
-                                onClick={() => changeMonth(-1)}
-                                className="p-1 hover:bg-gray-100 rounded"
-                            >
-                                <ChevronLeft />
-                            </button>
+                            <div className="flex items-center justify-between mb-4">
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    size="icon"
+                                    onClick={() => changeMonth(-1)}
+                                    className="h-8 w-8 rounded-lg hover:bg-[#dc2626] hover:text-white transition-colors"
+                                >
+                                    <ChevronLeft size={16} />
+                                </Button>
 
-                            <span className="font-semibold text-sm">
-                                {monthNames[viewMonth]} {viewYear}
-                            </span>
+                                <span className="font-semibold text-sm text-gray-800">
+                                    {monthNames[viewMonth]} {viewYear}
+                                </span>
 
-                            <button
-                                type="button"
-                                onClick={() => changeMonth(1)}
-                                className="p-1 hover:bg-gray-100 rounded"
-                            >
-                                <ChevronRight />
-                            </button>
+                                <Button
+                                    variant="outline"
+                                    type="button"
+                                    size="icon"
+                                    onClick={() => changeMonth(1)}
+                                    className="h-8 w-8 rounded-lg hover:bg-[#dc2626] hover:text-white transition-colors"
+                                >
+                                    <ChevronRight size={16} />
+                                </Button>
+                            </div>
+
+                            <div className="grid grid-cols-7 gap-1 text-center mb-1">
+                                {['Min','Sen','Sel','Rab','Kam','Jum','Sab'].map((d, i) => (
+                                    <div key={d} className={`text-xs font-bold ${i === 0 ? 'text-red-500' : 'text-gray-400'}`}>{d}</div>
+                                ))}
+                            </div>
+
+                            <div className="grid grid-cols-7 gap-1">
+                                {[...Array(firstDay)].map((_, i) => <div key={i} />)}
+
+                                {[...Array(daysInMonth)].map((_, i) => {
+                                    const day = i + 1;
+                                    const dateStr = formatDate(viewYear, viewMonth, day);
+                                    const isSelected = data.tanggal === dateStr;
+
+                                    return (
+                                        <button
+                                            key={day}
+                                            type="button"
+                                            onClick={() => setData('tanggal', dateStr)}
+                                            className={`h-8 w-full rounded-md text-sm transition-all duration-300 font-medium ${isSelected
+                                                    ? 'bg-[#dc2626] text-white shadow-md shadow-[#dc2626]/30 scale-110 z-10'
+                                                    : 'text-gray-700 hover:bg-red-50 hover:text-[#dc2626]'
+                                                }`}
+                                        >
+                                            {day}
+                                        </button>
+                                    );
+                                })}
+                            </div>
+
                         </div>
-
-                        <div className="grid grid-cols-7 gap-1">
-                            {[...Array(firstDay)].map((_, i) => <div key={i} />)}
-
-                            {[...Array(daysInMonth)].map((_, i) => {
-                                const day = i + 1;
-                                const dateStr = formatDate(viewYear, viewMonth, day);
-
-                                return (
-                                    <button
-                                        key={day}
-                                        type="button"
-                                        onClick={() => setData('tanggal', dateStr)}
-                                        className={`p-2 rounded ${data.tanggal === dateStr
-                                                ? 'bg-yellow-400 text-white'
-                                                : 'hover:bg-gray-100'
-                                            }`}
-                                    >
-                                        {day}
-                                    </button>
-                                );
-                            })}
-                        </div>
-
-                        {(clientErrors.tanggal || errors.tanggal) && (
-                            <p className="text-red-500 text-sm mt-2">
+                        <div className={`overflow-hidden transition-all duration-300 ${(clientErrors.tanggal || errors.tanggal) ? 'h-5' : 'h-0'}`}>
+                            <p className="text-red-500 text-xs font-medium">
                                 {clientErrors.tanggal || errors.tanggal}
                             </p>
-                        )}
+                        </div>
                     </div>
 
-                    <div className="flex justify-end gap-2">
-                        <button type="button" onClick={handleClose}>
+                    <div className="flex justify-end gap-3 pt-4 border-t border-gray-100">
+                        <Button 
+                            type="button" 
+                            variant="outline" 
+                            onClick={handleClose}
+                            className="rounded-xl"
+                        >
                             Batal
-                        </button>
+                        </Button>
 
-                        <button
+                        <Button
                             type="submit"
                             disabled={processing}
-                            className="bg-red-600 text-white px-4 py-2 rounded"
+                            className="bg-[#dc2626] hover:bg-[#b91c1c] text-white rounded-xl shadow-md shadow-[#dc2626]/20 transition-all duration-300 active:scale-95 px-6"
                         >
                             {processing ? 'Menyimpan...' : 'Simpan'}
-                        </button>
+                        </Button>
                     </div>
 
                 </form>
-            </div>
-        </div>
+            </DialogContent>
+        </Dialog>
     );
 };

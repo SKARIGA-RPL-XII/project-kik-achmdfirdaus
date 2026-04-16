@@ -11,6 +11,7 @@ import ActionKaryawanMenu from '@/components/action-menu-karyawan'
 import ModalPelanggaran from '@/components/modal-pelanggaran'
 import { PDFDownloadLink } from '@react-pdf/renderer'
 import SlipPdf from '@/components/slip-report'
+import { FileDown } from 'lucide-react'
 
 type KaryawanData = {
     id: number
@@ -111,47 +112,47 @@ export default function Index({ karyawan, divisi, jabatan, gajiData, bulan }: an
         {
             header: '',
             className: 'text-center w-14',
-            render: (item) => (
-                <ActionKaryawanMenu
-                    onEdit={() => {
-                        setEditData(item)
-                        setModalOpen(true)
-                    }}
-                    onDelete={() => openDelete(item.id)}
-                    onReset={() =>
-                        router.post(`/app/karyawan/${item.id}/reset-password`)
-                    }
-                    onPelanggaran={() => {
-                        setSelectedKaryawan(item)
-                        setPelanggaranOpen(true)
-                    }}
-
-                />
-
-            ),
-        },
-        {
-            header: '',
-            className: 'text-center w-24',
             render: (item) => {
-
                 const gaji = gajiData.find(
                     (g: any) => g.karyawan_id === item.id
                 )
 
-                if (!gaji) return <span className="text-gray-400">Belum Generate</span>
-                console.log(gajiData)
-
-                return (
+                const slipNode = gaji ? (
                     <PDFDownloadLink
                         document={<SlipPdf data={{ ...gaji, nama: item.nama, nip: item.nip, jabatan: item.jabatan }} bulan={bulan} />}
                         fileName={`slip-${item.nip}.pdf`}
-                        className="text-blue-600 underline"
+                        className="w-full flex items-center gap-3 px-4 py-2 text-left hover:bg-gray-100 text-blue-600"
                     >
-                        {({ loading }) =>
-                            loading ? 'Generating...' : 'Export Slip'
-                        }
+                        {({ loading }) => (
+                            <>
+                                <FileDown size={14} />
+                                {loading ? 'Generating...' : 'Export Slip'}
+                            </>
+                        )}
                     </PDFDownloadLink>
+                ) : (
+                    <div className="w-full flex items-center gap-3 px-4 py-2 text-left text-gray-400 cursor-not-allowed">
+                        <FileDown size={14} />
+                        Slip Belum Dibuat
+                    </div>
+                )
+
+                return (
+                    <ActionKaryawanMenu
+                        onEdit={() => {
+                            setEditData(item)
+                            setModalOpen(true)
+                        }}
+                        onDelete={() => openDelete(item.id)}
+                        onReset={() =>
+                            router.post(`/app/karyawan/${item.id}/reset-password`)
+                        }
+                        onPelanggaran={() => {
+                            setSelectedKaryawan(item)
+                            setPelanggaranOpen(true)
+                        }}
+                        exportSlipNode={slipNode}
+                    />
                 )
             },
         }

@@ -143,8 +143,8 @@ function DynamicTable<T extends { id: string | number }>({
     );
 
     return (
-        <Card className="flex w-full flex-col overflow-hidden rounded-3xl border-none bg-white shadow-sm">
-            <CardHeader className="px-4 pt-6 pb-4 sm:px-8">
+        <Card className="flex w-full flex-col overflow-hidden rounded-3xl border-none bg-white shadow-sm hover:shadow-md transition-shadow duration-500">
+            <CardHeader className="px-4 pt-6 pb-4 sm:px-8 border-b border-gray-50/50 relative z-10">
                 {headerSlot ? (
                     headerSlot
                 ) : (
@@ -159,22 +159,22 @@ function DynamicTable<T extends { id: string | number }>({
                                 <Input
                                     ref={searchInputRef}
                                     type="text"
-                                    placeholder="Search..."
+                                    placeholder="Cari data..."
                                     value={searchTerm}
                                     onChange={handleSearch}
                                     onFocus={() => setIsSearchFocused(true)}
                                     onBlur={() => setIsSearchFocused(false)}
                                     autoComplete="off"
-                                    className="h-10 w-full rounded-lg border-red-200 bg-white pl-10 text-sm focus:border-red-500 focus:ring-1 focus:ring-red-500"
+                                    className="h-10 w-full rounded-lg border-gray-200 bg-gray-50/50 pl-10 text-sm focus:bg-white focus:border-red-400 focus:ring-2 focus:ring-red-100 transition-all duration-300 shadow-sm"
                                 />
                             </div>
 
                             {onAddClick && (
                                 <Button
                                     onClick={onAddClick}
-                                    className="h-10 w-full rounded-lg bg-[#114F38] px-6 text-white hover:bg-[#0d3f2d] sm:w-auto"
+                                    className="group h-10 w-full rounded-lg bg-[#114F38] px-6 text-white hover:bg-[#0d3f2d] sm:w-auto hover:shadow-lg hover:shadow-[#114F38]/30 transition-all duration-300 active:scale-95"
                                 >
-                                    <Plus className="mr-2 h-4 w-4" />
+                                    <Plus className="mr-2 h-4 w-4 group-hover:rotate-90 group-hover:scale-125 transition-transform duration-500" />
                                     {addButtonLabel}
                                 </Button>
                             )}
@@ -202,17 +202,19 @@ function DynamicTable<T extends { id: string | number }>({
                                             key={idx}
                                             className={`${colClasses} ${col.className || ''}`}
                                         >
-                                            {col.sortable && col.accessorKey ? (
+                                            {col.sortable !== false && (col.accessorKey || col.header === 'No') ? (
                                                 <button
                                                     onClick={() =>
                                                         handleSort(
-                                                            col.accessorKey!,
+                                                            col.accessorKey || ('id' as keyof T)
                                                         )
                                                     }
-                                                    className="group flex items-center gap-1 hover:text-gray-900 focus:outline-none"
+                                                    className="group flex items-center gap-1.5 hover:text-[#B50B08] focus:outline-none transition-colors duration-300"
                                                 >
                                                     {col.header}
-                                                    <ArrowUpDown className="h-3 w-3 text-gray-400 transition-colors group-hover:text-gray-900" />
+                                                    <span className="p-0.5 rounded-sm bg-gray-100 group-hover:bg-red-50 transition-colors">
+                                                        <ArrowUpDown className="h-3 w-3 text-gray-400 transition-all duration-500 group-hover:text-[#B50B08] group-hover:rotate-180" />
+                                                    </span>
                                                 </button>
                                             ) : (
                                                 col.header
@@ -228,7 +230,7 @@ function DynamicTable<T extends { id: string | number }>({
                                 paginatedData.map((item, rowIdx) => (
                                     <tr
                                         key={item.id}
-                                        className="group transition-colors hover:bg-gray-50/50"
+                                        className="group transition-all duration-300 hover:bg-red-50/40 relative hover:shadow-[inset_4px_0_0_0_#B50B08]"
                                     >
                                         {columns.map((col, colIdx) => (
                                             <td
@@ -292,9 +294,9 @@ function DynamicTable<T extends { id: string | number }>({
                         <button
                             onClick={() => handlePageChange(currentPage - 1)}
                             disabled={currentPage === 1}
-                            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-30 disabled:hover:bg-transparent sm:h-8 sm:w-8"
+                            className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-[#B50B08] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400 transition-all duration-300 active:scale-90 group"
                         >
-                            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <ChevronLeft className="h-3 w-3 sm:h-4 sm:w-4 group-hover:-translate-x-0.5 transition-transform" />
                         </button>
 
                         {Array.from(
@@ -313,9 +315,9 @@ function DynamicTable<T extends { id: string | number }>({
                                         onClick={() =>
                                             handlePageChange(pageNum)
                                         }
-                                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-medium transition-colors ${currentPage === pageNum
-                                            ? 'bg-emerald-50 text-emerald-600'
-                                            : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                                        className={`flex h-8 w-8 items-center justify-center rounded-full text-sm font-bold transition-all duration-300 active:scale-90 ${currentPage === pageNum
+                                            ? 'bg-[#B50B08] text-white shadow-md shadow-red-200 scale-110'
+                                            : 'text-gray-500 hover:bg-red-50 hover:text-[#B50B08]'
                                             }`}
                                     >
                                         {pageNum}
@@ -329,9 +331,9 @@ function DynamicTable<T extends { id: string | number }>({
                             disabled={
                                 currentPage === totalPages || totalPages === 0
                             }
-                            className="flex h-7 w-7 items-center justify-center rounded-full text-gray-500 hover:bg-gray-100 hover:text-gray-900 disabled:opacity-30 disabled:hover:bg-transparent sm:h-8 sm:w-8"
+                            className="flex h-7 w-7 sm:h-8 sm:w-8 items-center justify-center rounded-full text-gray-400 hover:bg-red-50 hover:text-[#B50B08] disabled:opacity-30 disabled:hover:bg-transparent disabled:hover:text-gray-400 transition-all duration-300 active:scale-90 group"
                         >
-                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4" />
+                            <ChevronRight className="h-3 w-3 sm:h-4 sm:w-4 group-hover:translate-x-0.5 transition-transform" />
                         </button>
                     </div>
                 </div>
