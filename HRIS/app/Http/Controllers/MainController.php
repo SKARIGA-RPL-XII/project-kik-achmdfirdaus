@@ -10,13 +10,14 @@ use App\Models\Lembur;
 use App\Models\Pelanggaran;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class MainController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
+        $user = Auth::user();
         $today = Carbon::today();
         $startMonth = now()->startOfMonth();
 
@@ -78,6 +79,9 @@ class MainController extends Controller
         $izin = Absensi::where('karyawan_id', $karyawanId)->where('status', 'izin')->count();
         $alpha = Absensi::where('karyawan_id', $karyawanId)->where('status', 'alpha')->count();
         $kalender = Kalender::select('tanggal', 'jenis_hari', 'keterangan')->get();
+        $absenHariIni = Absensi::where('karyawan_id', $karyawanId)
+            ->whereDate('tanggal', $today)
+            ->first();
 
         return Inertia::render('dashboard', [
             'role' => 'user',
@@ -89,6 +93,11 @@ class MainController extends Controller
                 'alpha' => $alpha,
             ],
             'kalender' => $kalender,
+            'absen' => $absenHariIni ? [
+                'jam_masuk' => $absenHariIni->jam_masuk,
+                'jam_pulang' => $absenHariIni->jam_pulang,
+                'status' => $absenHariIni->status,
+            ] : null,
         ]);
     }
 }

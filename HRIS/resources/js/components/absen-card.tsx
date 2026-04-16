@@ -14,7 +14,6 @@ export default function AbsenCard({ absen }: any) {
     const now = new Date()
     const isAfterFive = now.getHours() >= 17
 
-    // ⭐ rules baru
     const disableMasuk =
         sudahMasuk ||
         (isAfterFive && !sudahMasuk) ||
@@ -23,7 +22,9 @@ export default function AbsenCard({ absen }: any) {
     const disablePulang =
         !sudahMasuk ||
         sudahPulang ||
-        isAlpha
+        isAlpha ||
+        !isAfterFive // ⭐ sebelum 17 tidak bisa pulang
+
 
     const [openMasuk, setOpenMasuk] = useState(false)
     const [openPulang, setOpenPulang] = useState(false)

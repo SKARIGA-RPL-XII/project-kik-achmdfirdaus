@@ -198,6 +198,14 @@ class AdminController extends Controller
     }
     public function karyawan()
     {
+        $date = now()->subMonth();
+        $bulan = $date->month;
+        $tahun = $date->year;
+
+        $gaji = Gaji::with('karyawan')
+            ->where('bulan', $bulan)
+            ->where('tahun', $tahun)
+            ->get();
         $karyawanData = Karyawan::with([
             'user',
             'divisi',
@@ -227,6 +235,8 @@ class AdminController extends Controller
             'karyawan' => $karyawanData,
             'divisi' => Divisi::select('id', 'nama')->latest()->get(),
             'jabatan' => Jabatan::select('id', 'nama')->latest()->get(),
+            'gajiData' => $gaji,
+            'bulan' => $date->translatedFormat('F Y')
         ]);
     }
     public function karyawanStore(Request $request)
@@ -585,7 +595,8 @@ class AdminController extends Controller
     public function gaji()
     {
         $gajiData = Gaji::with([
-            'karyawan.user'
+            'karyawan.user',
+            'karyawan.jabatan'
         ])
             ->latest()
             ->get()
@@ -595,6 +606,7 @@ class AdminController extends Controller
 
                     'nama' => $item->karyawan->user->name ?? '-',
                     'nip' => $item->karyawan->nip ?? '-',
+                    'jabatan' => $item->karyawan->jabatan->nama ?? '-',
 
                     'bulan' => $item->bulan,
                     'tahun' => $item->tahun,

@@ -59,35 +59,43 @@ class UserController extends Controller
             return back()->with('error', 'Anda sudah absen hari ini.');
         }
 
-        // lewat jam 17 otomatis alpha
         if ($now->hour >= 17) {
             Absensi::create([
                 'karyawan_id' => $karyawan->id,
                 'tanggal' => $today,
-                'status' => 'alpha'
+                'status' => 'alpha',
+                'keterangan' => 'Tidak hadir'
             ]);
 
             return back()->with('error', 'Terlambat. Otomatis Alpha.');
         }
 
-        // ⭐ simpan ke folder MASUK
-        $file = $request->file('foto');
-        $filename = 'masuk_' . $karyawan->id . '_' . $now->timestamp . '.' . $file->extension();
+        $keterangan = $now->lt(Carbon::createFromTime(9, 0, 0))
+            ? 'Tepat Waktu'
+            : 'Terlambat';
 
-        $path = $file->storeAs('absensi/masuk', $filename, 'public');
+        $file = $request->file('foto');
+
+        $nip = $karyawan->nip;
+        $tanggal = $now->format('Ymd');
+        $jam = $now->format('His');
+
+        $filename = "{$nip}_{$tanggal}_{$jam}." . $file->extension();
+        $folder = "absensi/masuk/{$nip}";
+
+        $path = $file->storeAs($folder, $filename, 'public');
 
         Absensi::create([
             'karyawan_id' => $karyawan->id,
             'tanggal' => $today,
             'jam_masuk' => $now->format('H:i:s'),
             'foto_masuk' => $path,
-            'status' => 'hadir'
+            'status' => 'hadir',
+            'keterangan' => $keterangan
         ]);
 
         return back()->with('success', 'Absen masuk berhasil.');
     }
-
-
     public function absensiOut(Request $request)
     {
         $request->validate([
@@ -111,9 +119,16 @@ class UserController extends Controller
         }
 
         $file = $request->file('foto');
-        $filename = 'pulang_' . $karyawan->id . '_' . $now->timestamp . '.' . $file->extension();
 
-        $path = $file->storeAs('absensi/pulang', $filename, 'public');
+        $nip = $karyawan->nip;
+        $tanggal = $now->format('Ymd');
+        $jam = $now->format('His');
+
+        $filename = "{$nip}_{$tanggal}_{$jam}." . $file->extension();
+
+        $folder = "absensi/pulang/{$nip}";
+
+        $path = $file->storeAs($folder, $filename, 'public');
 
         $absen->update([
             'jam_pulang' => $now->format('H:i:s'),
@@ -122,7 +137,6 @@ class UserController extends Controller
 
         return back()->with('success', 'Absen pulang berhasil.');
     }
-
     public function cuti()
     {
         $karyawan = Auth::user()->karyawan;

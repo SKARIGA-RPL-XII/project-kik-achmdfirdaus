@@ -3,11 +3,13 @@ import { Head, router, usePage } from '@inertiajs/react'
 import { useMemo, useState } from 'react'
 import { Button } from '@/components/ui/button'
 import ModalDelete from '@/components/modal-delete'
-import ModalForm from '@/components/modal'
 import DynamicTable, { ColumnDef } from '@/components/dynamic-table'
 import Alert from '@/components/alert'
 import { formatRupiah } from '@/lib/format'
 import { BreadcrumbItem } from '@/types'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import ReportPdf from '@/components/report'
+import SlipPdf from '@/components/slip-report'
 
 type GajiData = {
     id: number
@@ -24,10 +26,10 @@ type GajiData = {
 
 interface PageProps {
     gajiData: GajiData[]
-    karyawanList: any[]
 }
 
-export default function Index({ gajiData, karyawanList }: PageProps) {
+export default function Index({ gajiData }: PageProps) {
+
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'App', href: '/app' },
         { title: 'Gaji', href: '/app/gaji' },
@@ -35,8 +37,6 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
 
     const { flash } = usePage().props as any
 
-    const [modalOpen, setModalOpen] = useState(false)
-    const [editData, setEditData] = useState<any>(null)
     const [deleteOpen, setDeleteOpen] = useState(false)
     const [deleteId, setDeleteId] = useState<number | null>(null)
 
@@ -47,6 +47,18 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
         'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
         'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
     ]
+
+    // Default bulan kemarin
+    const now = new Date()
+    const lastMonth = new Date(now.getFullYear(), now.getMonth() - 1)
+
+    const defaultBulan = lastMonth.getMonth() + 1
+    const defaultTahun = lastMonth.getFullYear()
+
+    const activeBulan = filterBulan ? Number(filterBulan) : defaultBulan
+    const activeTahun = filterTahun ? Number(filterTahun) : defaultTahun
+
+    const periodeLabel = `${bulanList[activeBulan - 1]} ${activeTahun}`
 
     function openDelete(id: number) {
         setDeleteId(id)
@@ -72,38 +84,19 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
         return data
     }, [gajiData, filterBulan, filterTahun])
 
-    const fields = [
-        {
-            name: 'karyawan_id',
-            label: 'Karyawan',
-            type: 'select',
-            options: karyawanList.map(k => ({
-                value: k.id,
-                label: k.nama
-            }))
-        },
-        { name: 'bulan', label: 'Bulan', type: 'number' },
-        { name: 'tahun', label: 'Tahun', type: 'number' },
-        { name: 'gaji_pokok', label: 'Gaji Pokok', type: 'rupiah' },
-        { name: 'total_lembur', label: 'Total Lembur', type: 'rupiah' },
-        { name: 'total_potongan', label: 'Total Potongan', type: 'rupiah' },
-        { name: 'total_gaji', label: 'Total Gaji', type: 'rupiah' },
-    ]
-
     const columns: ColumnDef<GajiData>[] = [
         {
             header: 'No',
-            accessorKey: 'id',
-            className: 'w-20 text-center',
             render: (_, index) => index + 1,
         },
         {
             header: 'Karyawan',
-            accessorKey: 'nama',
             render: (i) => (
                 <div>
                     <div className="font-medium">{i.nama}</div>
-                    <div className="text-xs text-gray-500">NIP: {i.nip}</div>
+                    <div className="text-xs text-gray-500">
+                        NIP: {i.nip}
+                    </div>
                 </div>
             ),
         },
@@ -132,17 +125,32 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
             ),
         },
         {
+            header: 'Slip',
+            render: (i) => (
+                <PDFDownloadLink
+                    document={
+                        <SlipPdf
+                            data={i}
+                            bulan={`${bulanList[i.bulan - 1]} ${i.tahun}`}
+                        />
+                    }
+                    fileName={`slip-${i.nip}.pdf`}
+                    className="text-blue-600 underline"
+                >
+                    {({ loading }) => loading ? '...' : 'Download'}
+                </PDFDownloadLink>
+            ),
+        },
+        {
             header: '',
             render: (i) => (
-                <div className="flex gap-2 justify-center">
-                    <Button
-                        size="sm"
-                        variant="destructive"
-                        onClick={() => openDelete(i.id)}
-                    >
-                        Hapus
-                    </Button>
-                </div>
+                <Button
+                    size="sm"
+                    variant="destructive"
+                    onClick={() => openDelete(i.id)}
+                >
+                    Hapus
+                </Button>
             ),
         },
     ]
@@ -162,7 +170,7 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                         <select
                             value={filterBulan}
                             onChange={(e) => setFilterBulan(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
+                            className="px-3 py-2 border rounded-lg text-sm"
                         >
                             <option value="">Semua Bulan</option>
                             {bulanList.map((b, i) => (
@@ -173,18 +181,35 @@ export default function Index({ gajiData, karyawanList }: PageProps) {
                         <select
                             value={filterTahun}
                             onChange={(e) => setFilterTahun(e.target.value)}
-                            className="px-3 py-2 border rounded-lg text-sm bg-white shadow-sm focus:ring-2 focus:ring-red-500"
+                            className="px-3 py-2 border rounded-lg text-sm"
                         >
                             <option value="">Semua Tahun</option>
                             {[2024, 2025, 2026].map(t => (
-                                <option key={t}>{t}</option>
+                                <option key={t} value={t}>{t}</option>
                             ))}
                         </select>
                     </div>
-                    <Button onClick={() => router.post('/app/gaji/generate')}>
-                        Generate Payroll
-                    </Button>
 
+                    <div className="flex gap-2">
+                        <Button onClick={() => router.post('/app/gaji/generate')}>
+                            Generate Payroll
+                        </Button>
+
+                        <PDFDownloadLink
+                            document={
+                                <ReportPdf
+                                    data={filteredData}
+                                    bulan={periodeLabel}
+                                />
+                            }
+                            fileName={`report-${periodeLabel}.pdf`}
+                            className="px-4 py-2 bg-red-600 text-white rounded"
+                        >
+                            {({ loading }) =>
+                                loading ? 'Generating PDF...' : 'Export Semua'
+                            }
+                        </PDFDownloadLink>
+                    </div>
                 </div>
 
                 <div className="bg-white rounded-xl shadow-sm border overflow-hidden">

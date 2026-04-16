@@ -9,6 +9,8 @@ import Alert from '@/components/alert'
 import { BreadcrumbItem } from '@/types'
 import ActionKaryawanMenu from '@/components/action-menu-karyawan'
 import ModalPelanggaran from '@/components/modal-pelanggaran'
+import { PDFDownloadLink } from '@react-pdf/renderer'
+import SlipPdf from '@/components/slip-report'
 
 type KaryawanData = {
     id: number
@@ -22,7 +24,7 @@ type KaryawanData = {
     jabatan_id: number
 }
 
-export default function Index({ karyawan, divisi, jabatan }: any) {
+export default function Index({ karyawan, divisi, jabatan, gajiData, bulan }: any) {
 
     const breadcrumbs: BreadcrumbItem[] = [
         { title: 'App', href: '/app' },
@@ -124,11 +126,36 @@ export default function Index({ karyawan, divisi, jabatan }: any) {
                         setPelanggaranOpen(true)
                     }}
 
-
                 />
 
             ),
         },
+        {
+            header: '',
+            className: 'text-center w-24',
+            render: (item) => {
+
+                const gaji = gajiData.find(
+                    (g: any) => g.karyawan_id === item.id
+                )
+
+                if (!gaji) return <span className="text-gray-400">Belum Generate</span>
+                console.log(gajiData)
+
+                return (
+                    <PDFDownloadLink
+                        document={<SlipPdf data={{ ...gaji, nama: item.nama, nip: item.nip, jabatan: item.jabatan }} bulan={bulan} />}
+                        fileName={`slip-${item.nip}.pdf`}
+                        className="text-blue-600 underline"
+                    >
+                        {({ loading }) =>
+                            loading ? 'Generating...' : 'Export Slip'
+                        }
+                    </PDFDownloadLink>
+                )
+            },
+        }
+
     ]
 
 

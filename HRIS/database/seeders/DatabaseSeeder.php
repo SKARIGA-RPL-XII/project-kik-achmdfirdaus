@@ -20,37 +20,37 @@ class DatabaseSeeder extends Seeder
         DB::table('users')->insert([
             [
                 'name' => 'Admin HR',
-                'email' => 'admin@hris.test',
+                'email' => 'admin@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'admin',
             ],
             [
                 'name' => 'Achmad Firdaus Ramadhani',
-                'email' => 'achmad@hris.test',
+                'email' => 'achmad@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
                 'name' => 'Raysha AlFatikhah Wijaya',
-                'email' => 'raysha@hris.test',
+                'email' => 'raysha@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
                 'name' => 'Farrel Rayo Setyabudi',
-                'email' => 'farrel@hris.test',
+                'email' => 'farrel@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
                 'name' => 'Mohammad Farfan Maulana',
-                'email' => 'farfan@hris.test',
+                'email' => 'farfan@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
             [
                 'name' => 'Alfaluis Bintang Arsa',
-                'email' => 'bintang@hris.test',
+                'email' => 'bintang@hris.com',
                 'password' => Hash::make($password),
                 'role' => 'user',
             ],
@@ -123,11 +123,11 @@ class DatabaseSeeder extends Seeder
         */
 
         $start = now()->subMonth()->startOfDay();
-        $end   = now();
+        $end   = now()->subDay()->endOfDay(); // ⭐ sampai kemarin
 
         $statuses = ['hadir', 'hadir', 'hadir', 'hadir', 'cuti', 'izin', 'alpha'];
 
-        for ($date = $start->copy(); $date <= $end; $date->addDay()) {
+        for ($date = $start->copy(); $date->lte($end); $date->addDay()) {
 
             if ($date->isWeekend()) continue;
 
@@ -144,6 +144,8 @@ class DatabaseSeeder extends Seeder
                     'foto_pulang' => 'pulang.jpg',
                     'status' => $status,
                     'keterangan' => null,
+                    'created_at' => now(),
+                    'updated_at' => now(),
                 ]);
             }
         }

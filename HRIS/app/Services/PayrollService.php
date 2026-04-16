@@ -40,13 +40,6 @@ class PayrollService
                 ->sum('potongan');
 
             $totalGaji = $gajiPokok + $totalLembur - $totalPotongan;
-            logger([
-                'karyawan' => $karyawan->user->name ?? '',
-                'gajiPokok' => $gajiPokok,
-                'jumlahLembur' => $jumlahLembur,
-                'totalLembur' => $totalLembur,
-                'potongan' => $totalPotongan,
-            ]);
 
             Gaji::updateOrCreate(
                 [
